@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pic/splash.png</file>
+        <file>pic/莅时医学.ico</file>
+        <file>pic/莅时医学.png</file>
+    </qresource>
+</RCC>
