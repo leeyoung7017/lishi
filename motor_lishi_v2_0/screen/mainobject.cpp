@@ -22,9 +22,9 @@ void MainObject::setInit()
 {
     SplashScreen::getInstance()->setStagePercent(0,tr("初始化应用程序 ..."));
     m_mainWindow = new MainWindow(nullptr);
-    m_mainWindow->setWindowTitle(tr("细胞样本自动制片仪"));
-    m_mainWindow->setWindowIcon(QIcon(":/pic/莅时医学.ico"));
-    SplashScreen::getInstance()->setStart(m_mainWindow, tr("QCoolPage"), QString(":/pic/莅时医学.png"));
+    m_mainWindow->setWindowTitle(tr("细胞样本自动染色仪"));
+    m_mainWindow->setWindowIcon(QIcon(":/pic/lishi.ico"));
+    SplashScreen::getInstance()->setStart(m_mainWindow, tr("QCoolPage"), QString(":/pic/lishi.png"));
     SplashScreen::getInstance()->setStagePercent(40, tr("初始化主界面 ..."));
     SplashScreen::getInstance()->setStagePercent(80, tr("加载界面 ..."));
     SplashScreen::getInstance()->setStagePercent(100, tr("加载完毕！"));

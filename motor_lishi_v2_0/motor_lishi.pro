@@ -56,3 +56,5 @@ DISTFILES +=
 
 RESOURCES += \
     pic.qrc
+
+RC_ICONS = ./pic/lishi.ico
