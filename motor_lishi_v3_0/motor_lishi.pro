@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport printsupport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport printsupport sql
 
 TARGET = motor_lishi
 TEMPLATE = app
@@ -25,26 +25,34 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
+    file.cpp \
+    gv.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    process.cpp \
+    scancodegun.cpp \
     serial.cpp \
     protocol.cpp \
-    crc16.cpp \
     screen/mainobject.cpp \
     screen/splashscreen.cpp \
-    ini.cpp
+    ini.cpp \
+    sqlite.cpp
 
 HEADERS += \
-        mainwindow.h \
+    file.h \
+    mainwindow.h \
+    process.h \
+    scancodegun.h \
     serial.h \
     protocol.h \
-    crc16.h \
     screen/mainobject.h \
     screen/splashscreen.h \
-    ini.h
+    ini.h \
+    gv.h \
+    sqlite.h
 
 FORMS += \
-        mainwindow.ui \
+    mainwindow.ui \
     serial.ui
 
 # Default rules for deployment.

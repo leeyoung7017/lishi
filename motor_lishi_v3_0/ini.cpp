@@ -43,31 +43,5 @@ QString passwd_codec(QString str,bool flag)
 }
 
 
-QStringList file_op(QString path)
-{
-    QStringList name;
-    QFile inFile(path);
-    if (inFile.open(QIODevice::ReadOnly))
-    {
-        QTextStream in(&inFile);
-        in.setCodec("GBK"); // 设置文件的编码格式为GBK
-        QString line = in.readLine();
-        for(int i=0;i<line.size();i++)
-            name = line.split(",");/*列数据*/
-    }
 
-    inFile.close();
-    return name;
-}
-
-void file_write(QString path,QString name)
-{
-    QFile inFile(path);
-    if (inFile.open(QIODevice::WriteOnly))
-    {
-        inFile.write(name.toLocal8Bit());
-    }
-
-    inFile.close();
-}
 

@@ -12,33 +12,31 @@
 #include "serial.h"
 #include "protocol.h"
 #include "ini.h"
+#include "file.h"
+#include "gv.h"
+#include "sqlite.h"
+#include "scancodegun.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-typedef struct{
-    uint32_t x;
-    uint32_t y;
-    uint32_t z;
-}location;
 
-#define FILE "F:\\Project\\motor_lishi\\motor_lishi_v3_0\\files\\QCheckBox.csv"
-#define SCANPATH    "F:\\Project\\motor_lishi\\motor_lishi_v3_0\\files\\SCAN.csv"
-#define MOTORNUM   (20)
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    location loc;
 
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void Serial_Init(QSerialPort *serialport, serial *serial);
     void List_Init(void);
     bool eventFilter(QObject *obj, QEvent *event);
+    void MotorNameInit();
 
+    void changeMotorName(QCheckBox *motor, QString sName);
 private slots:
     void on_SerialBotton_clicked();
     void serialreceive(void);
@@ -59,7 +57,7 @@ private slots:
 
     void on_ScanBotton_clicked();
 
-    void on_step_textChanged();
+    void step_textChanged();
 
 private:
     Ui::MainWindow *ui;
@@ -68,7 +66,6 @@ private:
     QSerialPort *SerialPort;
     QSerialPort *ScanSerialPort;
     Protocol *protocol;
-
 
     QString loc_str;//发送的坐标所平行轴
     uint32_t step;//坐标
@@ -80,6 +77,9 @@ private:
     QList<QLineEdit *> func_list;
     QList<QSlider *> slider_list;
 
+    file *csv;//csv文件
+    sqlite *sql;//数据库
+    ScanCodeGun *scan;
 
 };
 
