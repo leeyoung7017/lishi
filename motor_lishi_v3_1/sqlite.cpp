@@ -1,4 +1,4 @@
-#include "sqlite.h"
+#include "gv.h"
 #include "sqlite.h"
 
 sqlite::sqlite(QObject *parent) : QObject(parent)
@@ -11,7 +11,7 @@ void sqlite::Init()
      if(QSqlDatabase::drivers().isEmpty()) //判断数据库的驱动是否为空
          qDebug() << "No database drivers found";
 
-     db.setDatabaseName("F:\\Project\\motor_lishi\\DataBase\\leeyoung7017.db");
+     db.setDatabaseName(DATABASEPATH);
      if(!db.open())
          qDebug() << "db not open";
 
@@ -187,10 +187,14 @@ void sqlite::clearMotor(QSqlDatabase db)
     q.exec("delete from motor");
 }
 
-void sqlite::changeMotor(QSqlDatabase db, int num, QString name)
+void sqlite::changeMotor(QSqlDatabase db)
 {
     QSqlQuery q(db);
-    QString str = QString("update motor set name = '%1' where id=%2").arg(name).arg(num);
-    q.exec(str);
+    for(int i=0;i<MOTORNUM;i++)
+    {
+        QString str = QString("update motor set name = '%1' where id=%2").arg(MotorName[i]).arg(i);
+        q.exec(str);
+    }
+
 }
 

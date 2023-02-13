@@ -1,5 +1,5 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef MYPROCESS_H
+#define MYPROCESS_H
 
 
 class Process

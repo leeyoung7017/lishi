@@ -5,8 +5,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCheckBox>
-#include "sqlite.h"
-
+#include "gv.h"
 
 
 class file : public QObject
@@ -19,7 +18,7 @@ public:
     void informationInit(QString path);//文件中读取信息到结构体中
     void informationStore(QString path, db_struct *db_loc);//将结构体中数据保存至文件中
     QStringList motorRead(QString path);
-    void motorStore(QList<QCheckBox *> motor_list, QString path);
+    void motorStore(QString path);
     QString file_read(QString path);//读取文件数据
     void file_write(QString path,QString name);//将字符串写入文件
 

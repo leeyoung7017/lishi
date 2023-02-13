@@ -1,5 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "mythread.h"
+#include <processthreadsapi.h>
+
+
+file *csv;
+sqlite *sql;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -7,13 +13,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //将文件、数据库中的数据导入全局结构体中
-    #ifdef CSV
-    csv = new file();//csv文件初始化
-    #endif
-    #ifdef SQL
-    sql = new sqlite();//数据库初始化
-    #endif
+    List_Init();
+
+    DataThread();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
+
+    TimThread();    //创建子线程，在子线程中 使用定时器功能
+
+    emit timStart(1000);
 
     scan = new ScanCodeGun();//扫码枪
     serialport = new serial();//串口配置
@@ -23,8 +29,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ScanSerialPort= new QSerialPort();//扫码枪串口传输
     protocol = new Protocol();
 
-    List_Init();
-    MotorNameInit();
+
+
+
+    qDebug() << "当前 ID号：" << GetCurrentThreadId();
 
     //实现将子界面的数据传递到主界面中
     connect(serialport,SIGNAL(send()),this,SLOT(serialreceive()));
@@ -40,6 +48,29 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::DataThread()
+{
+    QThread *thread_info = new QThread();   //线程创建
+    infoThread *infothread = new infoThread;    //线程功能实现类
+    infothread->moveToThread(thread_info);  //将对象转移到子线程中运行
+    thread_info->start(QThread::NormalPriority);    //线程开启
+    connect(this, SIGNAL(infoinit()),infothread, SLOT(infoInit()));     //信息初始化指令绑定  信息文件数据库初始化(实现了 信息导入全局结构体中)
+    connect(this, SIGNAL(infostore(QString)),infothread, SLOT(infoStore(QString))); //信息保存指令绑定  信息存储(信息的全局结构体存储)
+    connect(infothread,SIGNAL(motornameinit()),this, SLOT(MotorNameInit())); //电机名初始化指令绑定   电机文件数据库初始化(实现了 电机名导入全局结构体与界面中)
+    connect(this,SIGNAL(motorstore()), infothread, SLOT(motorStore())); //电机名保存指令绑定     电机名存储(将 电机名全局结构体存储)
+
+    emit infoinit();//发送信息初始化指令
+}
+
+void MainWindow::TimThread()
+{
+    QThread *thread_tim = new QThread();    //线程创建
+    Timer *tim = new Timer;             //线程功能实现类   定时器功能
+    tim->moveToThread(thread_tim);      //将对象转移到子线程中
+    thread_tim->start(QThread::NormalPriority);     //线程开启
+    connect(this,SIGNAL(timStart(int)),tim, SLOT(TimerStart(int)));     //定时器开启绑定
 }
 
 //将界面控件分类批量进行打包
@@ -145,8 +176,6 @@ void MainWindow::Serial_Init(QSerialPort *serialport, serial *serial)
     serialport->setParity(serial->serialstruct.parity);
     serialport->setStopBits(serial->serialstruct.stop);
 }
-
-
 
 void MainWindow::serialreceive(void)
 {
@@ -265,41 +294,12 @@ void MainWindow::scanreceive()
 void MainWindow::ScanSerialReceive()
 {
     QString str_code = "lishuyang,1302";
-    QString str_tube = ScanSerialPort->readAll();
-    QString str_slide;// = ScanSerialPort->readAll();
-    flag_scan_tube = 1;
+    QString str_tube;// = ScanSerialPort->readAll();
+    QString str_slide = ScanSerialPort->readAll();
+    flag_scan_tube = 0;
+    flag_scan_slide = 1;
 
-#ifdef SQL
-    //将数据导入到数据库中
-    if(flag_scan_tube)
-    {
-        flag_scan_tube = 0;
-        sql->changeTubesInfo_xy(db,str_tube,loc.x,loc.y);//试管的位置
-        //试管的位置需要确认
-    }
-    if(flag_scan_slide)
-    {
-        flag_scan_slide = 0;
-        sql->changeSlidesInfo_xy(db,str_slide,loc.x,loc.y);
-        //玻片的位置主要是根据x，y轴进行分析。
-    }
-#endif
-
-#ifdef CSV
-    //将数据导入csv文件中
-    if(flag_scan_tube)
-    {
-        flag_scan_tube = 0;
-        db_loc->tubes_info = str_tube;
-        csv->informationStore(INFORMATIONPATH, db_loc);//将结构体中数据保存至文件中
-    }
-    if(flag_scan_slide)
-    {
-        flag_scan_slide = 0;
-        db_loc->slide_info = str_slide;
-        csv->informationStore(INFORMATIONPATH, db_loc);//将结构体中数据保存至文件中
-    }
-#endif
+    emit infostore(str_slide);  //发送信息保存指令
 }
 
 //发送协议
@@ -330,6 +330,8 @@ void MainWindow::on_protocol_clicked()
         return;
     }
     data = protocol->Protocol_Config(0x00,motor,step);
+    motor_g = motor;
+    step_g = step;
     SerialPort->write(data);
     data.clear();    
 
@@ -339,12 +341,15 @@ void MainWindow::on_run_clicked()
     QByteArray data;
     if(ui->run->text() == "停止")
     {
-        data = protocol->Protocol_Stop();
+//        data = protocol->Protocol_Stop();
+        data = protocol->Protocol_Config(0x01,motor_g,step_g);  //停止指令
         ui->run->setText("继续");
     }
     else
     {
-        data = protocol->Protocol_Continue();
+//        data = protocol->Protocol_Continue();
+
+        data = protocol->Protocol_Config(0x02,motor_g,step_g);  //继续指令
         ui->run->setText("停止");
     }
 
@@ -354,7 +359,8 @@ void MainWindow::on_run_clicked()
 void MainWindow::on_reset_clicked()
 {
     QByteArray data;
-    data = protocol->Protocol_Reset();
+//    data = protocol->Protocol_Reset();
+    data = protocol->Protocol_Config(0x03,0,0);  //继续指令
     SerialPort->write(data);
     data.clear();
 }
@@ -398,19 +404,9 @@ void MainWindow::step_textChanged()
 //初始化Motor name
 void MainWindow::MotorNameInit()
 {
-    #ifdef CSV
-    //csv文件读取，命名各个电机
-    QStringList name = csv->motorRead(MOTORPATH);
-    #endif
-
-    #ifdef SQL
-    //数据库读取，命名各个电机
-    QStringList name = sql->getMotor(db);
-    #endif
-
     for(int i=0;i<MOTORNUM;i++)
     {
-        motor_list[i]->setText(name.at(i));
+        motor_list[i]->setText(MotorName[i]);
         motor_list[i]->installEventFilter(this);//复选框安装事件过滤器
     }
 }
@@ -418,23 +414,16 @@ void MainWindow::MotorNameInit()
 //修改motor name
 void MainWindow::changeMotorName(QCheckBox *motor, QString sName)
 {
-    QString name;
     motor->setText(sName);
     motor->setChecked(false);
-    #ifdef CSV
-    //csv文件操作
-    csv->motorStore(motor_list, MOTORPATH);
-    #endif
-    #ifdef SQL
-    //数据库操作
     for(int i=0;i<MOTORNUM;i++)
     {
-        if(motor_list.at(i) == motor)
+        if(motor == motor_list[i])
         {
-            sql->changeMotor(db,i,sName);
+            MotorName[i] = sName;
         }
     }
-    #endif
+    emit motorstore();  //电机名保存指令
 }
 
 //双击事件触发修改点击名称

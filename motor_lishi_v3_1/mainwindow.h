@@ -13,9 +13,9 @@
 #include "protocol.h"
 #include "ini.h"
 #include "file.h"
-#include "gv.h"
 #include "sqlite.h"
 #include "scancodegun.h"
+#include "mythread.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,10 +34,12 @@ public:
     void Serial_Init(QSerialPort *serialport, serial *serial);
     void List_Init(void);
     bool eventFilter(QObject *obj, QEvent *event);
-    void MotorNameInit();
 
     void changeMotorName(QCheckBox *motor, QString sName);
+    void DataThread();
+    void TimThread();
 private slots:
+    void MotorNameInit();
     void on_SerialBotton_clicked();
     void serialreceive(void);
     void scanreceive(void);
@@ -52,8 +54,7 @@ private slots:
 
     void on_reset_clicked();
 
-//    void SliderChanged();
-//    void LineEditChanged();
+
 
     void on_ScanBotton_clicked();
 
@@ -77,9 +78,15 @@ private:
     QList<QLineEdit *> func_list;
     QList<QSlider *> slider_list;
 
-    file *csv;//csv文件
-    sqlite *sql;//数据库
+
     ScanCodeGun *scan;
+
+signals:
+    void infoinit();
+    void infostore(QString str);
+    void motorinit();
+    void motorstore();
+    void timStart(int ms);
 
 };
 

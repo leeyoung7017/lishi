@@ -1,3 +1,4 @@
+#include "gv.h"
 #include "ini.h"
 
 void passwd_changed(QString str)

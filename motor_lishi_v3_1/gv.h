@@ -4,6 +4,12 @@
 #include <stdint.h>
 #include <QtGlobal>
 #include <QSqlDatabase>
+//#include "ini.h"
+//#include "process.h"
+//#include "scancodegun.h"
+//#include "serial.h"
+//#include "sqlite.h"
+//#include "file.h"
 
 
 #define CSV
@@ -12,9 +18,11 @@
 #define MOTORNUM   (20)
 #define TESTNUM 64
 
+
 //#define MOTORPATH "F:\\Project\\motor_lishi\\motor_lishi_v3_0\\files\\QCheckBox.csv"
-//#define MOTORPATH ":/files/QCheckBox.csv"
-#define INFORMATIONPATH    "F:\\Project\\motor_lishi\\motor_lishi_v3_0\\files\\information.csv"
+#define MOTORPATH           ":/files/QCheckBox.csv"
+#define INFORMATIONPATH     ":/files/information.csv"
+#define DATABASEPATH              ":/..\\DataBase\\leeyoung7017.db"
 
 
 typedef struct{
@@ -56,8 +64,10 @@ typedef struct
 
 }db_struct;
 
+
 extern location loc;//坐标位置
 extern db_struct db_loc[TESTNUM];//数据库中坐标信息
+extern QString MotorName[MOTORNUM];
 
 extern uint8_t flag_continue;  //继续指令反馈标志位
 extern uint8_t flag_reset;     //复位指令反馈标志位
@@ -68,6 +78,9 @@ extern uint8_t flag_scan_tube;  //试管扫码枪扫描标志位
 extern uint8_t flag_scan_slide; //载波片扫码枪扫描标志位
 
 extern QSqlDatabase db;
+
+extern uint32_t motor_g;
+extern uint32_t step_g;
 
 #endif // GV_H
 //全局变量的设置

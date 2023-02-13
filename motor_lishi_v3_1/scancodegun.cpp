@@ -1,3 +1,4 @@
+#include "gv.h"
 #include "scancodegun.h"
 #include <QDebug>
 

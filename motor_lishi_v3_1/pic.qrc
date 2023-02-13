@@ -3,5 +3,8 @@
         <file>pic/splash.png</file>
         <file>pic/lishi.ico</file>
         <file>pic/lishi.png</file>
+        <file>files/information.csv</file>
+        <file>files/QCheckBox.csv</file>
+        <file>../DataBase/leeyoung7017.db</file>
     </qresource>
 </RCC>

@@ -1,9 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include "screen/mainobject.h"
-#include "file.h"
-#include "ini.h"
-#include "sqlite.h"
 #include "gv.h"
 
 int main(int argc, char *argv[])

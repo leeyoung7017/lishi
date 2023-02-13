@@ -23,7 +23,7 @@ public:
     uint32_t getCount(QSqlDatabase db);//获取数据总数
 
     QStringList getMotor(QSqlDatabase db);
-    void changeMotor(QSqlDatabase db, int num, QString name);  //修改num对应的电机号的名称
+    void changeMotor(QSqlDatabase db);  //修改num对应的电机号的名称
     void clearMotor(QSqlDatabase db);
     void informationInit(QSqlDatabase db);
     void changeSlidesInfo_Tubes(QSqlDatabase db, QString slides_info, QString tubes_info);    //根据试管信息修改玻片信息

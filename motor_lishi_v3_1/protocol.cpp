@@ -1,4 +1,5 @@
 #include "protocol.h"
+#include "gv.h"
 
 Protocol::Protocol(QObject *parent) : QObject(parent)
 {

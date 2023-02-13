@@ -1,4 +1,5 @@
 #include "file.h"
+#include "gv.h"
 
 file::file(QObject *parent) : QObject(parent)
 {
@@ -113,13 +114,13 @@ void file::file_write(QString path,QString name)
 }
 
 
-void file::motorStore(QList<QCheckBox *> motor_list, QString path)
+void file::motorStore(QString path)
 {
     QString name;
 
     for(int i=0;i<MOTORNUM;i++)
     {
-        name += (motor_list.at(i)->text()+'\n');
+        name += (MotorName[i]+'\n');
     }
 
     file_write(path,name);
