@@ -38,17 +38,18 @@ public:
     void changeMotorName(QCheckBox *motor, QString sName);
     void DataThread();
     void TimThread();
+    void SerialInit();
+
+    void ConnnectInit();
 private slots:
     void MotorNameInit();
     void on_SerialBotton_clicked();
-    void serialreceive(void);
-    void scanreceive(void);
-
     void on_protocol_clicked();
 
 
     void SerialReceive();
-    void ScanSerialReceive();
+    void ScanSlideSerialReceive();
+    void ScanTubeSerialReceive();
 
     void on_run_clicked();
 
@@ -56,18 +57,37 @@ private slots:
 
 
 
-    void on_ScanBotton_clicked();
+    void on_ScanSlideBotton_clicked();
+    void on_ScanTubeBotton_clicked();
 
     void step_textChanged();
+
+    void on_SlideButton_clicked();
+
+    void on_TubeBotton_clicked();
+
+    void scanslideinit();
+    void scantubeinit();
+    void serialinit();
+
+    void on_fpga_triggered();
+
+    void on_slide_triggered();
+
+    void on_tube_triggered();
+
+    void on_save_clicked();
 
 private:
     Ui::MainWindow *ui;
     serial *serialport;
-    serial *scanport;
+    serial *scanslideport;
+    serial *scantubeport;
     QSerialPort *SerialPort;
-    QSerialPort *ScanSerialPort;
+    QSerialPort *ScanSlideSerialPort;
+    QSerialPort *ScanTubeSerialPort;
     Protocol *protocol;
-
+    file *file;
     QString loc_str;//发送的坐标所平行轴
     uint32_t step;//坐标
 

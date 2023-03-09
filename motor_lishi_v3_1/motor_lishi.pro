@@ -30,7 +30,6 @@ SOURCES += \
     gv.cpp \
     main.cpp \
     mainwindow.cpp \
-    myprocess.cpp \
     mythread.cpp \
     scancodegun.cpp \
     serial.cpp \
@@ -43,7 +42,6 @@ SOURCES += \
 HEADERS += \
     file.h \
     mainwindow.h \
-    myprocess.h \
     mythread.h \
     scancodegun.h \
     serial.h \
@@ -63,7 +61,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES +=
+DISTFILES += \
+    files/QCheckBox.csv \
+    files/information.csv
 
 RESOURCES += \
     pic.qrc

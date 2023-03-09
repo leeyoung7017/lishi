@@ -14,6 +14,10 @@ class infoThread : public QObject
     Q_OBJECT
 public:
     explicit infoThread(QObject *parent = nullptr);
+
+    int getIndexSildeFromxy(QString path, location loc);
+    int getIndexTubeFromxy(QString path, location loc);
+
 public slots:
     void infoInit();
     void infoStore(QString str);

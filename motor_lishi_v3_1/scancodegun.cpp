@@ -15,7 +15,6 @@ QByteArray ScanCodeGun::Scan_Decode_Start(void)
     data.append(0x16);
     data.append(0x54);
     data.append(0x0D);
-    qDebug() << data;
     return data;
 }
 
@@ -25,7 +24,6 @@ QByteArray ScanCodeGun::Scan_Decode_End(void)
     data.append(0x16);
     data.append(0x55);
     data.append(0x0D);
-    qDebug() << data;
     return data;
 }
 
@@ -35,15 +33,12 @@ QByteArray ScanCodeGun::Scan_Decode_End(void)
 QByteArray ScanCodeGun::Scan_Protocol(QString str)
 {
     QByteArray data;
+    QString str0 = str;
     data.append(0x16);
-    data.append(0x4d);
-    data.append(0x0d);
-    for(int i=0;i<str.size();i++)
-    {
-        data.append(str[i].toLatin1());
-    }
-    data.append(0x2e);
-    qDebug() << data;
+    data.append(0x4D);
+    data.append(0x0D);
+    data.append(str0.toUtf8());
+    data.append(0x2E);
     return data;
 }
 

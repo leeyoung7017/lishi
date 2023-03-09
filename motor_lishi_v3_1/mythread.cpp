@@ -58,17 +58,17 @@ void infoThread::infoStore(QString str)
     if(flag_scan_tube)
     {
         flag_scan_tube = 0;
-        db_loc->tubes_info = str;
+        db_loc[0].tubes_info = str;
         csv->informationStore(INFORMATIONPATH, db_loc);//将结构体中数据保存至文件中
     }
     if(flag_scan_slide)
     {
         flag_scan_slide = 0;
-        db_loc->slide_info = str;
+        db_loc[getIndexSildeFromxy(INFORMATIONPATH,loc)].slide_info = str; //根据坐标设置
         csv->informationStore(INFORMATIONPATH, db_loc);//将结构体中数据保存至文件中
     }
 #endif
-//    qDebug() << "infoStoreThread ID号：" << GetCurrentThreadId();
+
 }
 
 void infoThread::motorStore()
@@ -83,7 +83,37 @@ void infoThread::motorStore()
     #endif
 }
 
+int infoThread::getIndexSildeFromxy(QString path,location loc)
+{
+    int index = 0;
+    uint32_t x = loc.x;
+    uint32_t y = loc.y;
 
+    for(int i=0;i<TESTNUM;i++)
+    {
+        if(x == db_loc[i].slides_loc.x && y == db_loc[i].slides_loc.y)
+        {
+            index = i;
+        }
+    }
+    return index;
+}
+
+int infoThread::getIndexTubeFromxy(QString path,location loc)
+{
+    int index = 0;
+    uint32_t x = loc.x;
+    uint32_t y = loc.y;
+
+    for(int i=0;i<TESTNUM;i++)
+    {
+        if(x == db_loc[i].tubes_loc.x && y == db_loc[i].tubes_loc.y)
+        {
+            index = i;
+        }
+    }
+    return index;
+}
 
 
 Timer::Timer(QObject *parent) : QObject(parent)

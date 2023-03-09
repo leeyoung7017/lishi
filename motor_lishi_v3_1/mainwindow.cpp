@@ -13,6 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->SerialBotton->setVisible(false);
+    ui->ScanSlideBotton->setVisible(false);
+    ui->ScanTubeBotton->setVisible(false);
+
     List_Init();
 
     DataThread();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
@@ -21,22 +25,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     emit timStart(1000);
 
-    scan = new ScanCodeGun();//扫码枪
-    serialport = new serial();//串口配置
-    scanport = new serial();//扫码枪串口配置
-    SerialPort= new QSerialPort();//串口传输
+    SerialInit();
 
-    ScanSerialPort= new QSerialPort();//扫码枪串口传输
     protocol = new Protocol();
 
 
-
-
-    qDebug() << "当前 ID号：" << GetCurrentThreadId();
-
-    //实现将子界面的数据传递到主界面中
-    connect(serialport,SIGNAL(send()),this,SLOT(serialreceive()));
-    connect(scanport,SIGNAL(send()),this,SLOT(scanreceive()));
     for(int i=0;i<MOTORNUM;i++)
     {
         //将同轴作用的电机进行步数统一
@@ -50,6 +43,26 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+//总串口初始化
+void MainWindow::SerialInit()
+{
+    scan = new ScanCodeGun();//扫码枪
+    serialport = new serial();//串口配置
+    scantubeport = new serial();//扫码枪(试管)串口配置
+    scanslideport = new serial();//扫码枪(玻片)串口配置
+
+    SerialPort= new QSerialPort();//串口传输
+    ScanTubeSerialPort= new QSerialPort();//扫码枪(试管)串口传输
+    ScanSlideSerialPort= new QSerialPort();//扫码枪(玻片)串口传输
+
+    //实现将子界面参数配置的数据传递到主界面中
+    connect(serialport,SIGNAL(send()),this,SLOT(serialinit()));
+    connect(scantubeport,SIGNAL(send()),this,SLOT(scantubeinit()));
+    connect(scanslideport,SIGNAL(send()),this,SLOT(scanslideinit()));
+}
+
+
+//数据库与csv文件转移线程
 void MainWindow::DataThread()
 {
     QThread *thread_info = new QThread();   //线程创建
@@ -64,6 +77,7 @@ void MainWindow::DataThread()
     emit infoinit();//发送信息初始化指令
 }
 
+//定时器转移线程
 void MainWindow::TimThread()
 {
     QThread *thread_tim = new QThread();    //线程创建
@@ -166,6 +180,10 @@ void MainWindow::List_Init(void)
 
 }
 
+void MainWindow::ConnnectInit()
+{
+//    co/nnect()
+}
 
 //串口初始化并打开
 void MainWindow::Serial_Init(QSerialPort *serialport, serial *serial)
@@ -177,7 +195,8 @@ void MainWindow::Serial_Init(QSerialPort *serialport, serial *serial)
     serialport->setStopBits(serial->serialstruct.stop);
 }
 
-void MainWindow::serialreceive(void)
+//下位机串口初始化并打开
+void MainWindow::serialinit(void)
 {
     Serial_Init(SerialPort, serialport);
     connect(SerialPort,SIGNAL(readyRead()),this,SLOT(SerialReceive()));//串口打开，并绑定接收槽函数
@@ -189,7 +208,8 @@ void MainWindow::SerialReceive()
 {
     QMessageBox Mbox;
     QByteArray data = nullptr;
-    data = SerialPort->readAll();
+    data = SerialPort->readAll();  
+    file->logWrite(READ,data,ui->log);
     if(data.at(0)==0x55 && data.at(1)==(char)0xAA)
     {
         switch(data.at(2))
@@ -260,46 +280,89 @@ void MainWindow::SerialReceive()
             ui->lcdNumber_2->display(QString::number(loc.y));
             ui->lcdNumber_3->display(QString::number(loc.z));
         }
-
-
     }
 }
 
 //扫码枪串口初始化配置________________测试需要完善
-void MainWindow::scanreceive()
+void MainWindow::scanslideinit()
+{
+    Serial_Init(ScanSlideSerialPort, scanslideport);
+    connect(ScanSlideSerialPort,SIGNAL(readyRead()),this,SLOT(ScanSlideSerialReceive()));
+    ScanSlideSerialPort->open(QIODevice::ReadWrite);
+}
+
+//试管扫描枪串口初始化
+void MainWindow::scantubeinit()
 {
     QString str;
     QByteArray data;
-    Serial_Init(ScanSerialPort, scanport);
-    connect(ScanSerialPort,SIGNAL(readyRead()),this,SLOT(ScanSerialReceive()));
-    ScanSerialPort->open(QIODevice::ReadWrite);
-
-
-    data = scan->Scan_Protocol(RST);
-    ScanSerialPort->write(data);
-    data = scan->Scan_Protocol(SCANMODE_MASTER);
-    ScanSerialPort->write(data);
-    data = scan->Scan_Protocol(LIGHTING_AUTO);
-    ScanSerialPort->write(data);
-    data = scan->Scan_Protocol(LIGHTING_AUTO);
-    ScanSerialPort->write(data);
-    data = scan->Scan_Decode_Start();
-    ScanSerialPort->write(data);
-
-    data = scan->Scan_Decode_End();
-    ScanSerialPort->write(data);
+    Serial_Init(ScanTubeSerialPort, scantubeport);
+    connect(ScanTubeSerialPort,SIGNAL(readyRead()),this,SLOT(ScanTubeSerialReceive()));
+    ScanTubeSerialPort->open(QIODevice::ReadWrite);
 }
 
-//接收条形码数据________________测试需要完善
-void MainWindow::ScanSerialReceive()
+//扫码枪玻片扫描
+void MainWindow::on_SlideButton_clicked()
 {
-    QString str_code = "lishuyang,1302";
-    QString str_tube;// = ScanSerialPort->readAll();
-    QString str_slide = ScanSerialPort->readAll();
-    flag_scan_tube = 0;
+    QByteArray data;
+    data = scan->Scan_Decode_Start();
+    ScanSlideSerialPort->write(data);
+     ui->stateslide->setText("扫码中...");
+}
+//扫码枪试管扫描
+void MainWindow::on_TubeBotton_clicked()
+{
+    QByteArray data;
+    data = scan->Scan_Decode_Start();
+    ScanTubeSerialPort->write(data);
+    ui->statetube->setText("扫码中...");
+}
+
+
+//玻片接收条形码数据________________测试需要完善
+void MainWindow::ScanSlideSerialReceive()
+{
+
+    QByteArray data;
+    data = scan->Scan_Decode_End();
+    ScanSlideSerialPort->write(data);
+    QString str_slide = ScanSlideSerialPort->readAll();
+    ui->stateslide->setText("扫码完成");
+
     flag_scan_slide = 1;
 
+
+
+    if(str_slide.at(str_slide.size()-1)=="\n")
+    {
+        str_slide = str_slide.left(str_slide.size()-1);
+    }
+    if(str_slide.at(str_slide.size()-1)=="\r")
+    {
+        str_slide = str_slide.left(str_slide.size()-1);
+    }
     emit infostore(str_slide);  //发送信息保存指令
+}
+//试管接收条形码数据
+void MainWindow::ScanTubeSerialReceive()
+{
+    QByteArray data;
+    data = scan->Scan_Decode_End();
+    ScanSlideSerialPort->write(data);
+    ui->statetube->setText("扫码完成");
+
+    QString str_tube = ScanTubeSerialPort->readAll();
+    flag_scan_tube = 1;
+    if(str_tube.at(str_tube.size()-1)=="\n")
+    {
+        str_tube = str_tube.left(str_tube.size()-1);
+    }
+
+    if(str_tube.at(str_tube.size()-1)=="\r")
+    {
+        str_tube = str_tube.left(str_tube.size()-1);
+    }
+    emit infostore(str_tube);  //发送信息保存指令
 }
 
 //发送协议
@@ -333,6 +396,7 @@ void MainWindow::on_protocol_clicked()
     motor_g = motor;
     step_g = step;
     SerialPort->write(data);
+    file->logWrite(WRITE,data,ui->log);
     data.clear();    
 
 }
@@ -353,7 +417,8 @@ void MainWindow::on_run_clicked()
         ui->run->setText("停止");
     }
 
-    SerialPort->write(data);
+    SerialPort->write(data);   
+    file->logWrite(WRITE,data,ui->log);
     data.clear();
 }
 void MainWindow::on_reset_clicked()
@@ -362,18 +427,40 @@ void MainWindow::on_reset_clicked()
 //    data = protocol->Protocol_Reset();
     data = protocol->Protocol_Config(0x03,0,0);  //继续指令
     SerialPort->write(data);
+    file->logWrite(WRITE,data,ui->log);
     data.clear();
 }
 
+//串口配置窗口
+void MainWindow::on_fpga_triggered()
+{
+    SerialPort->close();//关闭之前打开的串口
+    serialport->show();//打开子界面，重新选择串口
+}
+void MainWindow::on_slide_triggered()
+{
+    ScanSlideSerialPort->close();//关闭之前打开的串口
+    scanslideport->show();//打开子界面，重新选择串口
+}
+void MainWindow::on_tube_triggered()
+{
+    ScanTubeSerialPort->close();//关闭之前打开的串口
+    scantubeport->show();//打开子界面，重新选择串口
+}
 void MainWindow::on_SerialBotton_clicked()
 {
     SerialPort->close();//关闭之前打开的串口
     serialport->show();//打开子界面，重新选择串口
 }
-void MainWindow::on_ScanBotton_clicked()
+void MainWindow::on_ScanSlideBotton_clicked()
 {
-    ScanSerialPort->close();//关闭之前打开的串口
-    scanport->show();//打开子界面，重新选择串口
+    ScanSlideSerialPort->close();//关闭之前打开的串口
+    scanslideport->show();//打开子界面，重新选择串口
+}
+void MainWindow::on_ScanTubeBotton_clicked()
+{
+    ScanTubeSerialPort->close();//关闭之前打开的串口
+    scantubeport->show();//打开子界面，重新选择串口
 }
 
 //将同功能的电机坐标为相同数据
@@ -440,3 +527,18 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
+
+void MainWindow::on_save_clicked()
+{
+    // 弹出文件对话框让用户选择文件保存路径
+    QString filePath = LOGPATH;
+
+    // 打开文件并将 QTextEdit 控件的内容写入文件
+    QFile file(LOGPATH);
+    QString str = ui->log->toPlainText();
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream << str << endl;
+        file.close();
+    }
+}

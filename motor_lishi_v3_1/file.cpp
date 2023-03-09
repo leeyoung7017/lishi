@@ -49,9 +49,9 @@ void file::informationInit(QString path)
 
 }
 
-void file::informationStore(QString path, db_struct *db_loc)
+void file::informationStore(QString path, db_struct *loc)
 {
-    QString name = info_write(db_loc);
+    QString name = info_write(loc);
     file_write(path, name);
 }
 
@@ -70,32 +70,32 @@ QString file::file_read(QString path)
 }
 
 //整理csv文件的字符串
-QString file::info_write(db_struct* db_loc)
+QString file::info_write(db_struct* loc)
 {
     QString name;
     for(int i=0;i<TESTNUM;i++)
     {
-        name += QString::number(db_loc[i].ID);
+        name += QString::number(loc[i].ID);
         name += ",";
-        name += db_loc[i].slide_info;
+        name += loc[i].slide_info;
         name += ",";
-        name += db_loc[i].tubes_info;
+        name += loc[i].tubes_info;
         name += ",";
-        name += QString::number(db_loc[i].slides_loc.x);
+        name += QString::number(loc[i].slides_loc.x);
         name += ",";
-        name += QString::number(db_loc[i].slides_loc.y);
+        name += QString::number(loc[i].slides_loc.y);
         name += ",";
-        name += QString::number(db_loc[i].tubes_loc.x);
+        name += QString::number(loc[i].tubes_loc.x);
         name += ",";
-        name += QString::number(db_loc[i].tubes_loc.y);
+        name += QString::number(loc[i].tubes_loc.y);
         name += ",";
-        name += QString::number(db_loc[i].needles_loc.x);
+        name += QString::number(loc[i].needles_loc.x);
         name += ",";
-        name += QString::number(db_loc[i].needles_loc.y);
+        name += QString::number(loc[i].needles_loc.y);
         name += ",";
-        name += QString::number(db_loc[i].needle_rm_loc.x);
+        name += QString::number(loc[i].needle_rm_loc.x);
         name += ",";
-        name += QString::number(db_loc[i].needle_rm_loc.y);
+        name += QString::number(loc[i].needle_rm_loc.y);
         name += "\n";
     }
     return name;
@@ -137,5 +137,57 @@ QStringList file::motorRead(QString path)
     return namelist;
 
 }
+
+void file::logInit()
+{
+    QString filepath = LOGPATH;
+    QFile file(filepath);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        return;
+    }
+    file.close();
+}
+
+void file::logWrite(int flag, QByteArray data, QTextEdit *lineedit)
+{
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QLocale locale(QLocale::English);
+    QString formattedDateTime = locale.toString(currentDateTime, "ddd MMMM d yyyy hh:mm:ss AP");
+    QFile file(LOGPATH);
+    QString str;
+    if (!file.open(QIODevice::Append | QIODevice::Text)) {
+        // 打开文件失败
+        return ;
+    }
+    QTextStream stream(&file);
+    if(flag)
+        str = "[" + formattedDateTime + "] " + "[Write] "+ data.toHex(' ');
+    else
+        str = "[" + formattedDateTime + "] " + "[Read] "+ data.toHex(' ');
+
+    stream << str << endl;
+
+    // 关闭文件
+    file.close();
+
+    logWriteUI(lineedit);
+
+}
+
+void file::logWriteUI(QTextEdit *edit)
+{
+    QFile file(LOGPATH);
+    QString str;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        // 打开文件失败
+        return ;
+    }
+
+    QString content = QString(file.readAll());
+    edit->setText(content);
+    file.close();
+}
+
 
 

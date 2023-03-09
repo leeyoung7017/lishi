@@ -14,6 +14,15 @@ int main(int argc, char *argv[])
     MainWindow m;
     m.show();
 
+//    QByteArray data;
+//    data.append(0x52);
+//    data.append(0x53);
+//    data.append(0x54);
+//    data.append(0x55);
+//    file *file = new class file();
+////    file->logInit();
+//    file->logWrite(data);
+
 //    sqlite sql;
 
 //    informationInit(FILE);

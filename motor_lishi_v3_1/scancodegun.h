@@ -5,12 +5,12 @@
 
 #define RST                 "%%%DEF"
 #define VERSION             "%%%VER"
-#define SCANMODE_KEY        "%0404D01%"
-#define SCANMODE_MASTER     "%0404D05%"
-#define SCANMODE_AUTOSENCE  "%0404D07%"
-#define LIGHTING_CLOSE      "%0605D00%"
-#define LIGHTING_OPEN       "%0605D01%"
-#define LIGHTING_AUTO       "%0605D02%"
+#define SCANMODE_KEY        "%0401D01%"
+#define SCANMODE_MASTER     "%0401D05%"
+#define SCANMODE_AUTOSENCE  "%0401D07%"
+#define LIGHTING_CLOSE      "%9001D00%"
+#define LIGHTING_OPEN       "%9001D01%"
+#define LIGHTING_AUTO       "%9001D03%"
 #define END                 "%END%"
 #define DECODE_START        0x54
 #define DECODE_END          0x55

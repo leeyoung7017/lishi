@@ -12,17 +12,19 @@
 //#include "file.h"
 
 
-#define CSV
-//#define SQL
+//#define CSV
+#define SQL
 
 #define MOTORNUM   (20)
 #define TESTNUM 64
 
 
-//#define MOTORPATH "F:\\Project\\motor_lishi\\motor_lishi_v3_0\\files\\QCheckBox.csv"
-#define MOTORPATH           ":/files/QCheckBox.csv"
-#define INFORMATIONPATH     ":/files/information.csv"
-#define DATABASEPATH              ":/..\\DataBase\\leeyoung7017.db"
+#define MOTORPATH "F:\\Project\\motor_lishi\\motor_lishi_v3_1\\files\\QCheckBox.csv"
+//#define MOTORPATH           ":/files/QCheckBox.csv"
+#define INFORMATIONPATH    "F:\\Project\\motor_lishi\\motor_lishi_v3_1\\files\\information.csv"
+//":/files/information.csv"
+#define DATABASEPATH             "F:\\Project\\motor_lishi\\DataBase\\leeyoung7017.db"
+// ":/../DataBase/leeyoung7017.db"
 
 
 typedef struct{
