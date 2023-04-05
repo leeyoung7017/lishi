@@ -19,7 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     List_Init();
 
-    DataThread();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
+
+//    DataThread();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
 
     TimThread();    //创建子线程，在子线程中 使用定时器功能
 
