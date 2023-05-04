@@ -20,9 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     List_Init();
 
 
-//    DataThread();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
+    DataThread();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
 
-    TimThread();    //创建子线程，在子线程中 使用定时器功能
+    TimThread();    //创建子线程，在子线程中 使用定时器功能   吹气，滴水等等
 
     emit timStart(1000);
 
@@ -308,7 +308,7 @@ void MainWindow::on_SlideButton_clicked()
     QByteArray data;
     data = scan->Scan_Decode_Start();
     ScanSlideSerialPort->write(data);
-     ui->stateslide->setText("扫码中...");
+    ui->stateslide->setText("扫码中...");
 }
 //扫码枪试管扫描
 void MainWindow::on_TubeBotton_clicked()
@@ -342,7 +342,7 @@ void MainWindow::ScanSlideSerialReceive()
     {
         str_slide = str_slide.left(str_slide.size()-1);
     }
-    emit infostore(str_slide);  //发送信息保存指令
+    infostore(str_slide);  //发送信息保存指令
 }
 //试管接收条形码数据
 void MainWindow::ScanTubeSerialReceive()
@@ -363,7 +363,7 @@ void MainWindow::ScanTubeSerialReceive()
     {
         str_tube = str_tube.left(str_tube.size()-1);
     }
-    emit infostore(str_tube);  //发送信息保存指令
+    infostore(str_tube);  //发送信息保存指令
 }
 
 //发送协议
