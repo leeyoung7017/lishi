@@ -66,6 +66,22 @@ typedef struct
 
 }db_struct;
 
+//功能码cmd
+#define CMD_MOTORY      0x49
+#define CMD_MOTORXZ     0x60
+#define CMD_PL          0x47
+#define CMD_YY          0x45
+#define CMD_CQ          0x39
+#define CMD_STOP        0x54
+#define CMD_CONTINUE    0xAA
+#define CMD_RESET       0x77
+#define FB_OK0           0xFF
+#define FB_OK1           0xAA
+#define FB_RESET0        0x99
+#define FB_RESET1        0x10
+#define FB_CRC0          0xCC
+#define FB_CRC1          0xBB
+
 
 extern location loc;//坐标位置
 extern db_struct db_loc[TESTNUM];//数据库中坐标信息

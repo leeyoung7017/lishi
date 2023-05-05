@@ -91,7 +91,7 @@ void MainWindow::TimThread()
 //将界面控件分类批量进行打包
 void MainWindow::List_Init(void)
 {
-    motor_list.append(ui->motor0);
+    motor_list.append(ui->motor20);
     motor_list.append(ui->motor1);
     motor_list.append(ui->motor2);
     motor_list.append(ui->motor3);
@@ -215,29 +215,35 @@ void MainWindow::SerialReceive()
     {
         switch(data.at(2))
         {
-            case 0x00:
-                if(data.at(3)==0x00)
+            case FB_OK0:
+                if(data.at(3)==(char)FB_OK1)
+                {
+                    QMessageBox::critical(this, tr("提示"), tr("电机运动完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
                     flag_run = 1;
-                else if(data.at(3) == (char)(0xff))
-                    QMessageBox::critical(this, tr("提示"), tr("运动指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+                }
                 break;
-            case 0x01:
-                if(data.at(3)==0x00)
-                    flag_stop = 1;
-                else if(data.at(3) == (char)(0xff))
-                    QMessageBox::critical(this, tr("提示"), tr("停止指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+            case FB_RESET0:
+                if(data.at(3) == (char)(FB_RESET1))
+                {
+                    flag_reset= 1;
+                    QMessageBox::critical(this, tr("提示"), tr("复位指令完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+                }
                 break;
-            case 0x02:
-                if(data.at(3)==0x00)
-                    flag_continue = 1;
-                else if(data.at(3) == (char)(0xff))
-                    QMessageBox::critical(this, tr("提示"), tr("继续运动指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-                break;
-            case 0x03:
-                if(data.at(3)==0x00)
-                    flag_reset = 1;
-                else if(data.at(3) == (char)(0xff))
-                    QMessageBox::critical(this, tr("提示"), tr("复位指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+//            case 0x01:
+//                if(data.at(3)==0x00)
+//                    flag_stop = 1;
+//                else if(data.at(3) == (char)(0xff))
+//                    QMessageBox::critical(this, tr("提示"), tr("停止指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+//                break;
+//            case 0x02:
+//                if(data.at(3)==0x00)
+//                    flag_continue = 1;
+//                else if(data.at(3) == (char)(0xff))
+//                    QMessageBox::critical(this, tr("提示"), tr("继续运动指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+//                break;
+            case FB_CRC0:
+                if(data.at(3) == (char)FB_CRC1)
+                    QMessageBox::critical(this, tr("提示"), tr("校验码指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
                 break;
             default:
                 break;
@@ -381,9 +387,9 @@ void MainWindow::on_protocol_clicked()
     {
         if(motor_list[i]->isChecked())  //获取选中的数据
         {
-            motor |= 1<<i;
+            motor |= 1<<(i-1);//电机号位控制
             num_motor++;
-            step = step_list[i]->text().toUInt();
+            step = step_list[i]->text().toInt();
 //            speed[num_motor] = speed_list[i]->text().toUInt();
             loc_str = func_list[i]->text();
         }
@@ -393,9 +399,50 @@ void MainWindow::on_protocol_clicked()
         QMessageBox::warning(this, tr("警告"),  tr("未选中任何电机"), QMessageBox::Yes | QMessageBox::Cancel,  QMessageBox::Cancel);
         return;
     }
-    data = protocol->Protocol_Config(0x00,motor,step);
-    motor_g = motor;
-    step_g = step;
+    if(ui->motor1->isChecked() && ui->motor6->isChecked())//判断是哪个电机，1、6电机
+    {
+        data = protocol->Protocol_Config(CMD_MOTORY,motor,step);
+        motor_g = motor;
+        step_g = step;
+    }
+    else if(ui->motor2->isChecked() && ui->motor3->isChecked() && ui->motor4->isChecked() && ui->motor5->isChecked() && ui->motor7->isChecked() && ui->motor8->isChecked())
+    {
+        data = protocol->Protocol_Config(CMD_MOTORXZ,motor,step);
+        motor_g = motor;
+        step_g = step;
+    }
+    else if(ui->motor9->isChecked())//移液电机
+    {
+        if(step<0) //方向为0
+        {
+            step = -step;
+            data = protocol->Protocol_Config(CMD_YY,0,step);
+        }
+        else//方向为1
+        {
+            data = protocol->Protocol_Config(CMD_YY,1,step);
+        }
+    }
+    else if(ui->motor10->isChecked())//喷淋电机
+    {
+        if(step<0) //方向为0
+        {
+            step = -step;
+            data = protocol->Protocol_Config(CMD_PL,0,step);
+        }
+        else//方向为1
+        {
+            data = protocol->Protocol_Config(CMD_PL,1,step);
+        }
+    }
+    else if(ui->motor11->isChecked())//吹气电机
+    {
+        data = protocol->Protocol_Config(CMD_CQ,motor,step);
+    }
+
+
+//    motor_g = motor;
+//    step_g = step;
     SerialPort->write(data);
     file->logWrite(WRITE,data,ui->log);
     data.clear();    
@@ -407,14 +454,14 @@ void MainWindow::on_run_clicked()
     if(ui->run->text() == "停止")
     {
 //        data = protocol->Protocol_Stop();
-        data = protocol->Protocol_Config(0x01,motor_g,step_g);  //停止指令
+        data = protocol->Protocol_Config(CMD_CONTINUE,motor_g,step_g);  //停止指令
         ui->run->setText("继续");
     }
     else
     {
 //        data = protocol->Protocol_Continue();
 
-        data = protocol->Protocol_Config(0x02,motor_g,step_g);  //继续指令
+        data = protocol->Protocol_Config(CMD_STOP,motor_g,step_g);  //继续指令
         ui->run->setText("停止");
     }
 
@@ -426,7 +473,7 @@ void MainWindow::on_reset_clicked()
 {
     QByteArray data;
 //    data = protocol->Protocol_Reset();
-    data = protocol->Protocol_Config(0x03,0,0);  //继续指令
+    data = protocol->Protocol_Config(CMD_RESET,0,0);  //继续指令
     SerialPort->write(data);
     file->logWrite(WRITE,data,ui->log);
     data.clear();
