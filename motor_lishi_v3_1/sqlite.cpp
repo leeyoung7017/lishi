@@ -1,6 +1,7 @@
 #include "gv.h"
 #include "sqlite.h"
-
+#include <QDir>
+#include <QSqlError>
 sqlite::sqlite(QObject *parent) : QObject(parent)
 {
     Init();
@@ -8,24 +9,72 @@ sqlite::sqlite(QObject *parent) : QObject(parent)
 
 void sqlite::Init()
 {
-     if(QSqlDatabase::drivers().isEmpty()) //判断数据库的驱动是否为空
-         qDebug() << "No database drivers found";
+    int flag_exist = 1;
+    QFileInfo fileInfo(DATABASEPATH);
+    if(!fileInfo.isFile()) flag_exist = 0;
 
-     db.setDatabaseName(DATABASEPATH);
-     if(!db.open())
-         qDebug() << "db not open";
+    if(QSqlDatabase::drivers().isEmpty()) //判断数据库的驱动是否为空
+        QMessageLogger().debug() << "No database drivers found";
 
-     informationInit(db);       //获取坐标与条形码信息
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(DATABASEPATH);
 
-//     changeSlidesInfo_Tubes(db, "slides", "tubes_info");
-//     changeTubesInfo_Slides(db, "tubes", "slides");
+    if(!db.open())
+    {
+        QSqlError error = db.lastError();
+        QMessageLogger().debug() << error.databaseText();
+        QMessageLogger().debug() << error.driverText();
+    }
+    else
+     QMessageLogger().debug() << "db open!"<<QDir::currentPath();
 
-//    addData(db,"1234567890","0987654321","lishuyang");
-//    rmData(db,"lishuyang");
-//    getCount(db);
-//    clearData(db);
+    if(!flag_exist)
+    {
+        createTable();
+    }
+
+//     informationInit(db);       //获取坐标与条形码信息
+
 }
 
+void sqlite::createTable()
+{
+    QSqlQuery q(db);
+    QString str = "create table information (                                                 \
+                                            ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,    \
+                                            slides_info text,                                 \
+                                            tubes_info text,                                  \
+                                            scanslides_x integer,                             \
+                                            scanslides_y integer,                             \
+                                            tubes_x integer,                                  \
+                                            tubes_y integer,                                  \
+                                            needles_x integer,                                \
+                                            needles_y integer,                                \
+                                            needle_rm_x integer,                              \
+                                            needle_rm_y integer,                              \
+                                            tubes integer,                                    \
+                                            needle_get_x integer,                             \
+                                            needle_get_y integer)";
+    q.prepare(str);
+    q.exec();
+    q.exec("INSERT INTO information VALUES (0, NULL, NULL, NULL,NULL, NULL,NULL, NULL,NULL, NULL,NULL, NULL,NULL, NULL)");
+    for(int i=0;i<TESTNUM-1;i++)
+    {
+         q.exec("INSERT INTO information VALUES (NULL, NULL, NULL, NULL,NULL, NULL,NULL, NULL,NULL, NULL,NULL, NULL,NULL, NULL)");
+    }
+
+    str = "create table motor(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name text)";
+    q.prepare(str);
+    q.exec();
+    str = QString("INSERT INTO motor VALUES (0,'%1')").arg("motor20");
+    q.exec(str);
+    for(int i=0;i<MOTORNUM-1;i++)
+    {
+        QString name = "motor"+QString::number(i+1);
+        str = QString("INSERT INTO motor VALUES (NULL,'%1')").arg(name);
+        q.exec(str);
+    }
+}
 
 void sqlite::informationInit(QSqlDatabase db)
 {
