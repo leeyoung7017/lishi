@@ -9,7 +9,7 @@
 #include <QDateTime>
 #include <QTextEdit>
 
-#define LOGPATH "F:\\Project\\motor_lishi\\motor_lishi_v3_1\\log.txt"
+#define LOGPATH "G:\\USER\\Project\\FilmProduct\\log.txt"
 #define WRITE 1
 #define READ  0
 

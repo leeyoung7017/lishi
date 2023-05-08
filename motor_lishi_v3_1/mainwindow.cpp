@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "mythread.h"
 #include <processthreadsapi.h>
+#include <QDebug>
+#include <QMetaType>
 
 
 file *csv;
@@ -17,16 +19,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->ScanSlideBotton->setVisible(false);
     ui->ScanTubeBotton->setVisible(false);
 
+    serialport = new serial();
+    scanslideport = new serial();
+    scantubeport = new serial();
+
     List_Init();
 
+    QMessageLogger().debug() << "mainwindow current thread ID :" <<QThread::currentThreadId();
 
-    DataThread();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
+    SerialThreadInit();
 
-    TimThread();    //创建子线程，在子线程中 使用定时器功能   吹气，滴水等等
+    DataThreadInit();   //创建子线程，在子线程中 完成数据库或CSV文件的操作
+
+    TimThreadInit();    //创建子线程，在子线程中 使用定时器功能   吹气，滴水等等
 
     emit timStart(1000);
 
-    SerialInit();
 
     protocol = new Protocol();
 
@@ -37,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(step_list[i],SIGNAL(editingFinished()),this, SLOT(step_textChanged()));
     }
 
+
+
 }
 
 MainWindow::~MainWindow()
@@ -44,27 +54,39 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//总串口初始化
-void MainWindow::SerialInit()
+
+void MainWindow::SerialThreadInit()
 {
-    scan = new ScanCodeGun();//扫码枪
-    serialport = new serial();//串口配置
-    scantubeport = new serial();//扫码枪(试管)串口配置
-    scanslideport = new serial();//扫码枪(玻片)串口配置
+    QThread *sub_serial = new QThread;
+    serialthread = new SerialThread;
+    serialthread->moveToThread(sub_serial);
+    sub_serial->start(QThread::NormalPriority);
 
-    SerialPort= new QSerialPort();//串口传输
-    ScanTubeSerialPort= new QSerialPort();//扫码枪(试管)串口传输
-    ScanSlideSerialPort= new QSerialPort();//扫码枪(玻片)串口传输
+    QThread *sub_slide = new QThread;
+    scanslidethread = new ScanSlideThread;
+    scanslidethread->moveToThread(sub_slide);
+    sub_slide->start(QThread::NormalPriority);
 
-    //实现将子界面参数配置的数据传递到主界面中
-    connect(serialport,SIGNAL(send()),this,SLOT(serialinit()));
-    connect(scantubeport,SIGNAL(send()),this,SLOT(scantubeinit()));
-    connect(scanslideport,SIGNAL(send()),this,SLOT(scanslideinit()));
+    QThread *sub_tube = new QThread;
+    scantubethread = new ScanTubeThread;
+    scantubethread->moveToThread(sub_tube);
+    sub_tube->start(QThread::NormalPriority);
+
+    qRegisterMetaType<location>("location");
+
+    //将串口绑定
+    connect(serialthread,SIGNAL(send(QByteArray, location)),this,SLOT(SerialReceive(QByteArray, location)));
+    connect(scanslidethread,SIGNAL(send(QString)),this,SLOT(ScanSlideSerialReceive(QString)));
+    connect(scantubethread,SIGNAL(send()),this,SLOT(ScanTubeSerialReceive()));
+
+    connect(scantubethread,SIGNAL(tubexystore(int)),this,SLOT(sendTubesxyStore(int)));    //按照字符串对应试管坐标
+    connect(this,SIGNAL(sendSerial(QByteArray)),serialthread,SLOT(SerialSend(QByteArray)));
+    connect(this,SIGNAL(sendScanSlide(QByteArray)),scanslidethread,SLOT(ScanSlideSerialSend(QByteArray)));
+    connect(this,SIGNAL(sendScanTube(QByteArray)),scantubethread,SLOT(ScanTubeSerialSend(QByteArray)));
 }
 
-
 //数据库与csv文件转移线程
-void MainWindow::DataThread()
+void MainWindow::DataThreadInit()
 {
     QThread *thread_info = new QThread();   //线程创建
     infoThread *infothread = new infoThread;    //线程功能实现类
@@ -74,12 +96,13 @@ void MainWindow::DataThread()
     connect(this, SIGNAL(infostore(QString)),infothread, SLOT(infoStore(QString))); //信息保存指令绑定  信息存储(信息的全局结构体存储)
     connect(infothread,SIGNAL(motornameinit()),this, SLOT(MotorNameInit())); //电机名初始化指令绑定   电机文件数据库初始化(实现了 电机名导入全局结构体与界面中)
     connect(this,SIGNAL(motorstore()), infothread, SLOT(motorStore())); //电机名保存指令绑定     电机名存储(将 电机名全局结构体存储)
+    connect(this,SIGNAL(tubexystore(int)),infothread,SLOT(TubesxyStore(int)));    //按照字符串对应试管坐标
 
     emit infoinit();//发送信息初始化指令
 }
 
 //定时器转移线程
-void MainWindow::TimThread()
+void MainWindow::TimThreadInit()
 {
     QThread *thread_tim = new QThread();    //线程创建
     Timer *tim = new Timer;             //线程功能实现类   定时器功能
@@ -183,137 +206,31 @@ void MainWindow::List_Init(void)
 
 void MainWindow::ConnnectInit()
 {
-//    co/nnect()
-}
 
-//串口初始化并打开
-void MainWindow::Serial_Init(QSerialPort *serialport, serial *serial)
-{
-    serialport->setPortName(serial->serialstruct.com);
-    serialport->setBaudRate(serial->serialstruct.baud);
-    serialport->setDataBits(serial->serialstruct.data);
-    serialport->setParity(serial->serialstruct.parity);
-    serialport->setStopBits(serial->serialstruct.stop);
-}
-
-//下位机串口初始化并打开
-void MainWindow::serialinit(void)
-{
-    Serial_Init(SerialPort, serialport);
-    connect(SerialPort,SIGNAL(readyRead()),this,SLOT(SerialReceive()));//串口打开，并绑定接收槽函数
-    SerialPort->open(QIODevice::ReadWrite);
 }
 
 //电机控制接收反馈______________测试需要完成流程
-void MainWindow::SerialReceive()
+void MainWindow::SerialReceive(QByteArray data, location loc)
 {
-    QMessageBox Mbox;
-    QByteArray data = nullptr;
-    data = SerialPort->readAll();  
+
     file->logWrite(READ,data,ui->log);
-    if(data.at(0)==0x55 && data.at(1)==(char)0xAA)
+
+    //打印显示位置
+    if(data.at(3) == 0x00)
     {
-        switch(data.at(2))
-        {
-            case FB_OK0:
-                if(data.at(3)==(char)FB_OK1)
-                {
-                    QMessageBox::critical(this, tr("提示"), tr("电机运动完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-                    flag_run = 1;
-                }
-                break;
-            case FB_RESET0:
-                if(data.at(3) == (char)(FB_RESET1))
-                {
-                    flag_reset= 1;
-                    QMessageBox::critical(this, tr("提示"), tr("复位指令完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-                }
-                break;
-//            case 0x01:
-//                if(data.at(3)==0x00)
-//                    flag_stop = 1;
-//                else if(data.at(3) == (char)(0xff))
-//                    QMessageBox::critical(this, tr("提示"), tr("停止指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-//                break;
-//            case 0x02:
-//                if(data.at(3)==0x00)
-//                    flag_continue = 1;
-//                else if(data.at(3) == (char)(0xff))
-//                    QMessageBox::critical(this, tr("提示"), tr("继续运动指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-//                break;
-            case FB_CRC0:
-                if(data.at(3) == (char)FB_CRC1)
-                    QMessageBox::critical(this, tr("提示"), tr("校验码指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-                break;
-            default:
-                break;
-        }
-
-        if(flag_run)
-        {
-            //接收完成之后记录位置
-            if(loc_str == "x")  loc.x = step;
-            else if(loc_str == "y") loc.y = step;
-            else if(loc_str == "z") loc.z = step;
-            //进行流程的封装
-
-
-            flag_run = 0;
-            qDebug() << "flag_run";
-        }
-        if(flag_stop)
-        {
-            flag_stop = 0;
-            qDebug() << "flag_stop";
-        }
-        if(flag_continue)
-        {
-            flag_continue = 0;
-            qDebug() << "flag_continue";
-        }
-        if(flag_reset)
-        {
-            //完成复位
-            loc.x = 0;  loc.y = 0;  loc.z = 0;
-            flag_reset = 0;
-            qDebug() << "flag_reset";
-        }
-
-
-        //打印显示位置
-        if(data.at(3) == 0x00)
-        {
-            ui->lcdNumber->display(QString::number(loc.x));
-            ui->lcdNumber_2->display(QString::number(loc.y));
-            ui->lcdNumber_3->display(QString::number(loc.z));
-        }
+        ui->lcdNumber->display(QString::number(loc.x));
+        ui->lcdNumber_2->display(QString::number(loc.y));
+        ui->lcdNumber_3->display(QString::number(loc.z));
     }
 }
 
-//扫码枪串口初始化配置________________测试需要完善
-void MainWindow::scanslideinit()
-{
-    Serial_Init(ScanSlideSerialPort, scanslideport);
-    connect(ScanSlideSerialPort,SIGNAL(readyRead()),this,SLOT(ScanSlideSerialReceive()));
-    ScanSlideSerialPort->open(QIODevice::ReadWrite);
-}
-
-//试管扫描枪串口初始化
-void MainWindow::scantubeinit()
-{
-    QString str;
-    QByteArray data;
-    Serial_Init(ScanTubeSerialPort, scantubeport);
-    connect(ScanTubeSerialPort,SIGNAL(readyRead()),this,SLOT(ScanTubeSerialReceive()));
-    ScanTubeSerialPort->open(QIODevice::ReadWrite);
-}
 
 //扫码枪玻片扫描
 void MainWindow::on_SlideButton_clicked()
 {
     QByteArray data;
     data = scan->Scan_Decode_Start();
-    ScanSlideSerialPort->write(data);
+    sendScanSlide(data);
     ui->stateslide->setText("扫码中...");
 }
 //扫码枪试管扫描
@@ -321,22 +238,16 @@ void MainWindow::on_TubeBotton_clicked()
 {
     QByteArray data;
     data = scan->Scan_Decode_Start();
-    ScanTubeSerialPort->write(data);
+    sendScanTube(data);
     ui->statetube->setText("扫码中...");
 }
 
 
 //玻片接收条形码数据________________测试需要完善
-void MainWindow::ScanSlideSerialReceive()
+void MainWindow::ScanSlideSerialReceive(QString str_slide)
 {
 
-    QByteArray data;
-    data = scan->Scan_Decode_End();
-    ScanSlideSerialPort->write(data);
-    QString str_slide = ScanSlideSerialPort->readAll();
     ui->stateslide->setText("扫码完成");
-
-    flag_scan_slide = 1;
 
 
 
@@ -353,23 +264,17 @@ void MainWindow::ScanSlideSerialReceive()
 //试管接收条形码数据
 void MainWindow::ScanTubeSerialReceive()
 {
-    QByteArray data;
-    data = scan->Scan_Decode_End();
-    ScanSlideSerialPort->write(data);
     ui->statetube->setText("扫码完成");
+//    if(str_tube.at(str_tube.size()-1)=="\n")
+//    {
+//        str_tube = str_tube.left(str_tube.size()-1);
+//    }
 
-    QString str_tube = ScanTubeSerialPort->readAll();
-    flag_scan_tube = 1;
-    if(str_tube.at(str_tube.size()-1)=="\n")
-    {
-        str_tube = str_tube.left(str_tube.size()-1);
-    }
-
-    if(str_tube.at(str_tube.size()-1)=="\r")
-    {
-        str_tube = str_tube.left(str_tube.size()-1);
-    }
-    infostore(str_tube);  //发送信息保存指令
+//    if(str_tube.at(str_tube.size()-1)=="\r")
+//    {
+//        str_tube = str_tube.left(str_tube.size()-1);
+//    }
+//    infostore(str_tube);  //发送信息保存指令
 }
 
 //发送协议
@@ -443,7 +348,8 @@ void MainWindow::on_protocol_clicked()
 
 //    motor_g = motor;
 //    step_g = step;
-    SerialPort->write(data);
+//    SerialPort->write(data);
+    sendSerial(data);
     file->logWrite(WRITE,data,ui->log);
     data.clear();    
 
@@ -465,7 +371,8 @@ void MainWindow::on_run_clicked()
         ui->run->setText("停止");
     }
 
-    SerialPort->write(data);   
+//    SerialPort->write(data);
+    sendSerial(data);
     file->logWrite(WRITE,data,ui->log);
     data.clear();
 }
@@ -474,7 +381,8 @@ void MainWindow::on_reset_clicked()
     QByteArray data;
 //    data = protocol->Protocol_Reset();
     data = protocol->Protocol_Config(CMD_RESET,0,0);  //继续指令
-    SerialPort->write(data);
+//    SerialPort->write(data);
+    sendSerial(data);
     file->logWrite(WRITE,data,ui->log);
     data.clear();
 }
@@ -482,34 +390,20 @@ void MainWindow::on_reset_clicked()
 //串口配置窗口
 void MainWindow::on_fpga_triggered()
 {
-    SerialPort->close();//关闭之前打开的串口
     serialport->show();//打开子界面，重新选择串口
+    connect(serialport,SIGNAL(send()),serialthread,SLOT(SerialOpen()));
 }
 void MainWindow::on_slide_triggered()
 {
-    ScanSlideSerialPort->close();//关闭之前打开的串口
     scanslideport->show();//打开子界面，重新选择串口
+    connect(scanslideport,SIGNAL(send()),scanslidethread,SLOT(ScanSlideOpen()));
 }
 void MainWindow::on_tube_triggered()
 {
-    ScanTubeSerialPort->close();//关闭之前打开的串口
     scantubeport->show();//打开子界面，重新选择串口
+    connect(scantubeport,SIGNAL(send()),scantubethread,SLOT(ScanTubeOpen()));
 }
-void MainWindow::on_SerialBotton_clicked()
-{
-    SerialPort->close();//关闭之前打开的串口
-    serialport->show();//打开子界面，重新选择串口
-}
-void MainWindow::on_ScanSlideBotton_clicked()
-{
-    ScanSlideSerialPort->close();//关闭之前打开的串口
-    scanslideport->show();//打开子界面，重新选择串口
-}
-void MainWindow::on_ScanTubeBotton_clicked()
-{
-    ScanTubeSerialPort->close();//关闭之前打开的串口
-    scantubeport->show();//打开子界面，重新选择串口
-}
+
 
 //将同功能的电机坐标为相同数据
 void MainWindow::step_textChanged()
@@ -589,4 +483,9 @@ void MainWindow::on_save_clicked()
         stream << str << endl;
         file.close();
     }
+}
+
+void MainWindow::sendTubesxyStore(int ID)
+{
+    emit tubexystore(ID);//将坐标进行保存
 }

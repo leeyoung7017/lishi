@@ -30,6 +30,7 @@ public:
     void changeTubesInfo_Slides(QSqlDatabase db, QString tubes_info, QString slides_info);       //根据玻片信息修改试管信息
     void changeTubesInfo_xy(QSqlDatabase db, QString tubes_info, uint32_t tubes_x, uint32_t tubes_y);           //根据试管坐标修改试管信息
     void changeSlidesInfo_xy(QSqlDatabase db, QString slides_info, uint32_t slides_x, uint32_t slides_y);       //根据玻片坐标修改玻片信息
+    void changeTubesxy_ID(QSqlDatabase db, uint32_t ID, uint32_t tubes_x, uint32_t tubes_y);
 signals:
 
 };

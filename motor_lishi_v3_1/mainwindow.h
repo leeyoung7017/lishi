@@ -16,6 +16,7 @@
 #include "sqlite.h"
 #include "scancodegun.h"
 #include "mythread.h"
+#include "serialthread.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,19 +37,21 @@ public:
     bool eventFilter(QObject *obj, QEvent *event);
 
     void changeMotorName(QCheckBox *motor, QString sName);
-    void DataThread();
-    void TimThread();
-    void SerialInit();
+    void TimThreadInit();
+
 
     void ConnnectInit();
+    void DataThreadInit();
+    void SerialThreadInit();
+public slots:
 private slots:
     void MotorNameInit();
-    void on_SerialBotton_clicked();
     void on_protocol_clicked();
 
+    void sendTubesxyStore(int ID);
 
-    void SerialReceive();
-    void ScanSlideSerialReceive();
+    void SerialReceive(QByteArray data, location loc);
+    void ScanSlideSerialReceive(QString str_slide);
     void ScanTubeSerialReceive();
 
     void on_run_clicked();
@@ -57,18 +60,12 @@ private slots:
 
 
 
-    void on_ScanSlideBotton_clicked();
-    void on_ScanTubeBotton_clicked();
-
     void step_textChanged();
 
     void on_SlideButton_clicked();
 
     void on_TubeBotton_clicked();
 
-    void scanslideinit();
-    void scantubeinit();
-    void serialinit();
 
     void on_fpga_triggered();
 
@@ -83,13 +80,8 @@ private:
     serial *serialport;
     serial *scanslideport;
     serial *scantubeport;
-    QSerialPort *SerialPort;
-    QSerialPort *ScanSlideSerialPort;
-    QSerialPort *ScanTubeSerialPort;
     Protocol *protocol;
     file *file;
-    QString loc_str;//发送的坐标所平行轴
-    uint32_t step;//坐标
 
     QList<QCheckBox *> motor_list;
     QList<QComboBox *> dir_list;
@@ -101,12 +93,21 @@ private:
 
     ScanCodeGun *scan;
 
+    SerialThread *serialthread;
+    ScanSlideThread *scanslidethread;
+    ScanTubeThread *scantubethread;
+
 signals:
     void infoinit();
     void infostore(QString str);
     void motorinit();
     void motorstore();
     void timStart(int ms);
+    void tubexystore(int ID);
+
+    void sendScanSlide(QByteArray data);
+    void sendScanTube(QByteArray data);
+    void sendSerial(QByteArray data);
 
 };
 

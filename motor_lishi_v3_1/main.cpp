@@ -9,15 +9,15 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 //启动界面
-    MainObject mainObject;
-    mainObject.setInit();
+//    MainObject mainObject;
+//    mainObject.setInit();
 
 //    uint8_t data123 = 10;
 //    printf("data = %x\n" , data123);
 //    printf("~data= %x\n" , data123);
 
-//    MainWindow m;
-//    m.show();
+    MainWindow m;
+    m.show();
 
 //    QByteArray data;
 //    data.append(0x52);

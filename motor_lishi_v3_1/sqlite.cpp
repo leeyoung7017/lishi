@@ -37,14 +37,23 @@ void sqlite::informationInit(QSqlDatabase db)
         db_loc[i].ID = q.value("ID").toInt();
         db_loc[i].slide_info = q.value("slides_info").toString();
         db_loc[i].tubes_info = q.value("tubes_info").toString();
+
         db_loc[i].tubes_loc.x = q.value("tubes_x").toUInt();
         db_loc[i].tubes_loc.y = q.value("tubes_y").toUInt();
-        db_loc[i].slides_loc.x = q.value("slides_x").toUInt();
-        db_loc[i].slides_loc.y = q.value("slides_y").toUInt();
+
+        db_loc[i].tubes_loc.y = q.value("tubes").toUInt();
+
+        db_loc[i].scanslides_loc.x = q.value("scanslides_x").toUInt();
+        db_loc[i].scanslides_loc.y = q.value("scanslides_y").toUInt();
+
         db_loc[i].needles_loc.x = q.value("needles_x").toUInt();
         db_loc[i].needles_loc.y = q.value("needles_y").toUInt();
+
         db_loc[i].needle_rm_loc.x = q.value("needle_rm_x").toUInt();
         db_loc[i].needle_rm_loc.y = q.value("needle_rm_y").toUInt();
+
+        db_loc[i].needle_get_loc.x = q.value("needle_get_x").toUInt();
+        db_loc[i].needle_get_loc.y = q.value("needle_get_y").toUInt();
         i++;
     }
 }
@@ -78,20 +87,23 @@ void sqlite::addTube(QSqlDatabase db, QString tubes)
 //根据坐标添加条形码信息，并写入全局结构体中
 void sqlite::changeSlidesInfo_xy(QSqlDatabase db, QString slides_info, uint32_t slides_x, uint32_t slides_y)
 {
-    int ID = 0;
-    for(int i=0;i<TESTNUM;i++)
-    {
-        if(db_loc[i].slides_loc.x == slides_x && db_loc[i].slides_loc.y == slides_y)
-        {
-            ID = i;
-            break;
-        }
-    }
+    static int ID = 0;
+//    for(int i=0;i<TESTNUM;i++)
+//    {
+//        if(db_loc[i].scanslides_loc.x == slides_x && db_loc[i].scanslides_loc.y == slides_y)
+//        {
+//            ID = i;
+//            break;
+//        }
+//    }
+
 
     db_loc[ID].slide_info = slides_info;
     QString str = QString("update information set slides_info = '%1' where ID = '%2'").arg(slides_info).arg(ID);
     QSqlQuery q(db);
     q.exec(str);
+    ID++;
+    if(ID==64)ID=0;
 }
 void sqlite::changeSlidesInfo_Tubes(QSqlDatabase db, QString slides_info, QString tubes_info)
 {
@@ -123,6 +135,16 @@ void sqlite::changeTubesInfo_xy(QSqlDatabase db, QString tubes_info, uint32_t tu
     db_loc[ID].tubes_info = tubes_info;
     QString str = QString("update information set tubes_info = '%1' where ID = '%2'").arg(tubes_info).arg(ID);
     QSqlQuery q(db);
+    q.exec(str);
+}
+//根据坐标添加条形码信息，并写入全局结构体中
+void sqlite::changeTubesxy_ID(QSqlDatabase db, uint32_t ID, uint32_t tubes_x, uint32_t tubes_y)
+{
+    QString str = QString("update information set tubes_x = '%1' where ID = '%2'").arg(tubes_x).arg(ID);
+    QSqlQuery q(db);
+    q.exec(str);
+
+    str = QString("update information set tubes_y = '%1' where ID = '%2'").arg(tubes_y).arg(ID);
     q.exec(str);
 }
 void sqlite::changeTubesInfo_Slides(QSqlDatabase db, QString tubes_info, QString slides_info)

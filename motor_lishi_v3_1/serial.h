@@ -5,6 +5,7 @@
 #include <QSerialPortInfo>
 #include <QSerialPort>
 #include <QMessageBox>
+#include "gv.h"
 
 namespace Ui {
 class serial;
@@ -18,24 +19,15 @@ public:
     explicit serial(QWidget *parent = nullptr);
     ~serial();
     void SerialInfo();
-
-
-    typedef struct{
-        QString com;
-        QSerialPort::BaudRate baud;
-        QSerialPort::DataBits data;
-        QSerialPort::StopBits stop;
-        QSerialPort::Parity parity;
-    }SerialStruct;
-
-    SerialStruct serialstruct;
-
 signals :
     void send();
 private slots:
     void on_buttonBox_accepted();
 private:
     Ui::serial *ui;
+    QSerialPort *SerialPort;
+    QSerialPort *ScanSlideSerialPort;
+    QSerialPort *ScanTubeSerialPort;
 };
 
 #endif // SERIAL_H

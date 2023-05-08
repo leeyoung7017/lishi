@@ -179,7 +179,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>x</string>
+         <string>z2</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -415,7 +415,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>吹气</string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -627,7 +627,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>喷淋</string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -932,7 +932,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>移液</string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -1437,7 +1437,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>z</string>
+         <string>移液</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -1825,7 +1825,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>x</string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -2287,7 +2287,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>x</string>
+         <string>z1</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -2933,7 +2933,7 @@ QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled, QSpinBox:disabl
 }</string>
         </property>
         <property name="text">
-         <string>x</string>
+         <string>扫码枪</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -5439,7 +5439,7 @@ QPushButton:disabled, QToolButton:disabled, QCommandLinkButton:disabled{
      <x>0</x>
      <y>0</y>
      <width>1145</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

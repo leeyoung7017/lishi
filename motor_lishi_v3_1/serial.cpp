@@ -1,6 +1,7 @@
 #include "gv.h"
 #include "serial.h"
 #include "ui_serial.h"
+#include <QThread>
 
 serial::serial(QWidget *parent) :
     QDialog(parent),
@@ -95,3 +96,4 @@ void serial::on_buttonBox_accepted()
     serialstruct.com = ui->Com->currentText();
     emit send();
 }
+

@@ -37,6 +37,7 @@ SOURCES += \
     screen/mainobject.cpp \
     screen/splashscreen.cpp \
     ini.cpp \
+    serialthread.cpp \
     sqlite.cpp
 
 HEADERS += \
@@ -50,6 +51,7 @@ HEADERS += \
     screen/splashscreen.h \
     ini.h \
     gv.h \
+    serialthread.h \
     sqlite.h
 
 FORMS += \
@@ -61,11 +63,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES += \
-    files/QCheckBox.csv \
-    files/information.csv
+DISTFILES +=
 
 RESOURCES += \
-    pic.qrc
+    res.qrc
 
 RC_ICONS = ./pic/lishi.ico

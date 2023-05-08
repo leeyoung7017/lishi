@@ -22,6 +22,7 @@ public slots:
     void infoInit();
     void infoStore(QString str);
     void motorStore();
+    void TubesxyStore(int ID);
 signals:
     void motornameinit();
 private:

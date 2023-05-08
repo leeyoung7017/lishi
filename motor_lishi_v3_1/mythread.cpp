@@ -32,6 +32,7 @@ void infoThread::infoInit()
     {
         MotorName[i] = name.at(i);//电机名导入结构体
     }
+    QMessageLogger().debug() << "mythread current thread ID :" <<QThread::currentThreadId();
     emit motornameinit();   //电机名称初始化
 }
 
@@ -71,6 +72,11 @@ void infoThread::infoStore(QString str)
 
 }
 
+void infoThread::TubesxyStore(int ID)
+{
+    sql->changeTubesxy_ID(db,ID,db_loc[ID].tubes_loc.x,db_loc[ID].tubes_loc.y);
+}
+
 void infoThread::motorStore()
 {
     #ifdef CSV
@@ -91,7 +97,7 @@ int infoThread::getIndexSildeFromxy(QString path,location loc)
 
     for(int i=0;i<TESTNUM;i++)
     {
-        if(x == db_loc[i].slides_loc.x && y == db_loc[i].slides_loc.y)
+        if(x == db_loc[i].scanslides_loc.x && y == db_loc[i].scanslides_loc.y)
         {
             index = i;
         }

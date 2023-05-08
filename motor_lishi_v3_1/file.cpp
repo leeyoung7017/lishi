@@ -39,8 +39,8 @@ void file::informationInit(QString path)
         db_loc[i].tubes_info =info[i].at(2);
         db_loc[i].tubes_loc.x = info[i].at(5).toUInt();
         db_loc[i].tubes_loc.y =info[i].at(6).toUInt();
-        db_loc[i].slides_loc.x =info[i].at(3).toUInt();
-        db_loc[i].slides_loc.y = info[i].at(4).toUInt();
+        db_loc[i].scanslides_loc.x =info[i].at(3).toUInt();
+        db_loc[i].scanslides_loc.y = info[i].at(4).toUInt();
         db_loc[i].needles_loc.x = info[i].at(7).toUInt();
         db_loc[i].needles_loc.y = info[i].at(8).toUInt();
         db_loc[i].needle_rm_loc.x = info[i].at(9).toUInt();
@@ -81,9 +81,9 @@ QString file::info_write(db_struct* loc)
         name += ",";
         name += loc[i].tubes_info;
         name += ",";
-        name += QString::number(loc[i].slides_loc.x);
+        name += QString::number(loc[i].scanslides_loc.x);
         name += ",";
-        name += QString::number(loc[i].slides_loc.y);
+        name += QString::number(loc[i].scanslides_loc.y);
         name += ",";
         name += QString::number(loc[i].tubes_loc.x);
         name += ",";
