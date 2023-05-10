@@ -1,3 +1,4 @@
+release/dialog.o
 release/file.o
 release/gv.o
 release/main.o
@@ -12,6 +13,7 @@ release/ini.o
 release/serialthread.o
 release/sqlite.o
 release/qrc_res.o
+release/moc_dialog.o
 release/moc_file.o
 release/moc_mainwindow.o
 release/moc_mythread.o

@@ -26,6 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS   \
 CONFIG += c++11
 
 SOURCES += \
+    dialog.cpp \
     file.cpp \
     gv.cpp \
     main.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
     sqlite.cpp
 
 HEADERS += \
+    dialog.h \
     file.h \
     mainwindow.h \
     mythread.h \
@@ -55,6 +57,7 @@ HEADERS += \
     sqlite.h
 
 FORMS += \
+    dialog.ui \
     mainwindow.ui \
     serial.ui
 

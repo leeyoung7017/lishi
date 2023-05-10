@@ -5450,7 +5450,14 @@ QPushButton:disabled, QToolButton:disabled, QCommandLinkButton:disabled{
     <addaction name="slide"/>
     <addaction name="tube"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>日志</string>
+    </property>
+    <addaction name="action"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <action name="fpga">
    <property name="text">
@@ -5465,6 +5472,11 @@ QPushButton:disabled, QToolButton:disabled, QCommandLinkButton:disabled{
   <action name="tube">
    <property name="text">
     <string>试管扫码枪</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>日志运行</string>
    </property>
   </action>
  </widget>

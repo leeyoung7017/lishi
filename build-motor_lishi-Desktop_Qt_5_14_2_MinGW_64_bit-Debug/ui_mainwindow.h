@@ -35,6 +35,7 @@ public:
     QAction *fpga;
     QAction *slide;
     QAction *tube;
+    QAction *action;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QGridLayout *gridLayout;
@@ -191,6 +192,7 @@ public:
     QLCDNumber *lcdNumber_3;
     QMenuBar *menuBar;
     QMenu *menu;
+    QMenu *menu_2;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -209,6 +211,8 @@ public:
         slide->setObjectName(QString::fromUtf8("slide"));
         tube = new QAction(MainWindow);
         tube->setObjectName(QString::fromUtf8("tube"));
+        action = new QAction(MainWindow);
+        action->setObjectName(QString::fromUtf8("action"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
@@ -4212,12 +4216,16 @@ public:
         menuBar->setGeometry(QRect(0, 0, 1145, 23));
         menu = new QMenu(menuBar);
         menu->setObjectName(QString::fromUtf8("menu"));
+        menu_2 = new QMenu(menuBar);
+        menu_2->setObjectName(QString::fromUtf8("menu_2"));
         MainWindow->setMenuBar(menuBar);
 
         menuBar->addAction(menu->menuAction());
+        menuBar->addAction(menu_2->menuAction());
         menu->addAction(fpga);
         menu->addAction(slide);
         menu->addAction(tube);
+        menu_2->addAction(action);
 
         retranslateUi(MainWindow);
 
@@ -4230,6 +4238,7 @@ public:
         fpga->setText(QCoreApplication::translate("MainWindow", "\344\270\213\344\275\215\346\234\272", nullptr));
         slide->setText(QCoreApplication::translate("MainWindow", "\347\216\273\347\211\207\346\211\253\347\240\201\346\236\252 ", nullptr));
         tube->setText(QCoreApplication::translate("MainWindow", "\350\257\225\347\256\241\346\211\253\347\240\201\346\236\252", nullptr));
+        action->setText(QCoreApplication::translate("MainWindow", "\346\227\245\345\277\227\350\277\220\350\241\214", nullptr));
         func19->setText(QString());
         func3->setText(QCoreApplication::translate("MainWindow", "z2", nullptr));
         label_speed_6->setText(QCoreApplication::translate("MainWindow", "\346\234\200\351\253\230\351\200\237\357\274\232", nullptr));
@@ -4325,6 +4334,7 @@ public:
         label_2->setText(QCoreApplication::translate("MainWindow", "y:", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "z:", nullptr));
         menu->setTitle(QCoreApplication::translate("MainWindow", "\344\270\262\345\217\243\351\205\215\347\275\256", nullptr));
+        menu_2->setTitle(QCoreApplication::translate("MainWindow", "\346\227\245\345\277\227", nullptr));
     } // retranslateUi
 
 };

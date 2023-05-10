@@ -17,6 +17,7 @@
 #include "scancodegun.h"
 #include "mythread.h"
 #include "serialthread.h"
+#include "dialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -43,7 +44,7 @@ public:
     void ConnnectInit();
     void DataThreadInit();
     void SerialThreadInit();
-public slots:
+
 private slots:
     void MotorNameInit();
     void on_protocol_clicked();
@@ -75,6 +76,10 @@ private slots:
 
     void on_save_clicked();
 
+    void on_action_triggered();
+
+    void sendProtocoltoSerial(QByteArray data);
+
 private:
     Ui::MainWindow *ui;
     serial *serialport;
@@ -97,6 +102,8 @@ private:
     ScanSlideThread *scanslidethread;
     ScanTubeThread *scantubethread;
 
+    Dialog *dialog;
+
 signals:
     void infoinit();
     void infostore(QString str);
@@ -108,6 +115,8 @@ signals:
     void sendScanSlide(QByteArray data);
     void sendScanTube(QByteArray data);
     void sendSerial(QByteArray data);
+    void sendToDialog();
+    void sendProtocolToMainWindow(QByteArray data);
 
 };
 

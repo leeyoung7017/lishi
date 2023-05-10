@@ -214,7 +214,17 @@ void MainWindow::ConnnectInit()
 void MainWindow::SerialReceive(QByteArray data, location loc)
 {
 
-    file->logWrite(READ,data,ui->log);
+
+
+    //窗体已打开
+    if(dialog->isVisible())
+    {
+        emit sendToDialog();
+    }
+    else
+    {
+        file->logWrite(READ,data,ui->log);//写入日志
+    }
 
     //打印显示位置
     if(data.at(3) == 0x00)
@@ -250,8 +260,6 @@ void MainWindow::ScanSlideSerialReceive(QString str_slide)
 
     ui->stateslide->setText("扫码完成");
 
-
-
     if(str_slide.at(str_slide.size()-1)=="\n")
     {
         str_slide = str_slide.left(str_slide.size()-1);
@@ -266,16 +274,6 @@ void MainWindow::ScanSlideSerialReceive(QString str_slide)
 void MainWindow::ScanTubeSerialReceive()
 {
     ui->statetube->setText("扫码完成");
-//    if(str_tube.at(str_tube.size()-1)=="\n")
-//    {
-//        str_tube = str_tube.left(str_tube.size()-1);
-//    }
-
-//    if(str_tube.at(str_tube.size()-1)=="\r")
-//    {
-//        str_tube = str_tube.left(str_tube.size()-1);
-//    }
-//    infostore(str_tube);  //发送信息保存指令
 }
 
 //发送协议
@@ -293,7 +291,7 @@ void MainWindow::on_protocol_clicked()
     {
         if(motor_list[i]->isChecked())  //获取选中的数据
         {
-            motor |= 1<<(i-1);//电机号位控制
+            motor |= 1<<i;//电机号位控制
             num_motor++;
             step = step_list[i]->text().toInt();
 //            speed[num_motor] = speed_list[i]->text().toUInt();
@@ -489,4 +487,18 @@ void MainWindow::on_save_clicked()
 void MainWindow::sendTubesxyStore(int ID)
 {
     emit tubexystore(ID);//将坐标进行保存
+}
+
+
+//日志窗体操作
+void MainWindow::on_action_triggered()
+{
+    dialog = new Dialog();
+    dialog->show();
+    connect(this,SIGNAL(sendToDialog()),dialog,SLOT(productProtocol()));//发送完成指令的信号
+    connect(dialog,SIGNAL(sendProtocolToMainWindow(QByteArray)),this,SLOT(sendProtocoltoSerial(QByteArray)));//串口发送指令
+}
+void MainWindow::sendProtocoltoSerial(QByteArray data)
+{
+    sendSerial(data);
 }
