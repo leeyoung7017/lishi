@@ -114,7 +114,8 @@ void MainWindow::TimThreadInit()
 //将界面控件分类批量进行打包
 void MainWindow::List_Init(void)
 {
-    motor_list.append(ui->motor20);
+
+
     motor_list.append(ui->motor1);
     motor_list.append(ui->motor2);
     motor_list.append(ui->motor3);
@@ -134,7 +135,7 @@ void MainWindow::List_Init(void)
     motor_list.append(ui->motor17);
     motor_list.append(ui->motor18);
     motor_list.append(ui->motor19);
-
+    motor_list.append(ui->motor20);
 
 
     step_list.append(ui->lineEdit0);
@@ -310,7 +311,7 @@ void MainWindow::on_protocol_clicked()
         motor_g = motor;
         step_g = step;
     }
-    else if(ui->motor2->isChecked() && ui->motor3->isChecked() && ui->motor4->isChecked() && ui->motor5->isChecked() && ui->motor7->isChecked() && ui->motor8->isChecked())
+    else if(ui->motor2->isChecked() || ui->motor3->isChecked() || ui->motor4->isChecked() || ui->motor5->isChecked() || ui->motor7->isChecked() || ui->motor8->isChecked())
     {
         data = protocol->Protocol_Config(CMD_MOTORXZ,motor,step);
         motor_g = motor;
