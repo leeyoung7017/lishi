@@ -269,6 +269,7 @@ void MainWindow::ScanSlideSerialReceive(QString str_slide)
         str_slide = str_slide.left(str_slide.size()-1);
     }
     infostore(str_slide);  //发送信息保存指令
+    sendToDialog();//发送信号
 }
 //试管接收条形码数据
 void MainWindow::ScanTubeSerialReceive()
@@ -500,5 +501,8 @@ void MainWindow::on_action_triggered()
 }
 void MainWindow::sendProtocoltoSerial(QByteArray data)
 {
-    sendSerial(data);
+    if(data.at(0) == 0x55)
+        sendSerial(data);
+    else if(data.at(0) == 0x16)
+        sendScanSlide(data);
 }

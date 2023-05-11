@@ -116,7 +116,6 @@ signals:
     void sendScanTube(QByteArray data);
     void sendSerial(QByteArray data);
     void sendToDialog();
-    void sendProtocolToMainWindow(QByteArray data);
 
 };
 

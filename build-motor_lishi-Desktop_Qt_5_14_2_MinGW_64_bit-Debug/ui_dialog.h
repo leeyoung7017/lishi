@@ -13,6 +13,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QTableWidget>
 
@@ -26,6 +27,8 @@ public:
     QPushButton *rmRow;
     QPushButton *send;
     QPushButton *export_2;
+    QLabel *stateProtocol;
+    QPushButton *import_2;
 
     void setupUi(QDialog *Dialog)
     {
@@ -47,6 +50,19 @@ public:
         export_2 = new QPushButton(Dialog);
         export_2->setObjectName(QString::fromUtf8("export_2"));
         export_2->setGeometry(QRect(300, 440, 75, 23));
+        stateProtocol = new QLabel(Dialog);
+        stateProtocol->setObjectName(QString::fromUtf8("stateProtocol"));
+        stateProtocol->setGeometry(QRect(600, 440, 111, 20));
+        QFont font;
+        font.setFamily(QString::fromUtf8("\346\245\267\344\275\223"));
+        font.setPointSize(12);
+        font.setBold(true);
+        font.setWeight(75);
+        stateProtocol->setFont(font);
+        stateProtocol->setAlignment(Qt::AlignCenter);
+        import_2 = new QPushButton(Dialog);
+        import_2->setObjectName(QString::fromUtf8("import_2"));
+        import_2->setGeometry(QRect(380, 440, 75, 23));
 
         retranslateUi(Dialog);
 
@@ -60,6 +76,8 @@ public:
         rmRow->setText(QCoreApplication::translate("Dialog", "\345\210\240\351\231\244\347\251\272\350\241\214", nullptr));
         send->setText(QCoreApplication::translate("Dialog", "\345\217\221\351\200\201\346\214\207\344\273\244", nullptr));
         export_2->setText(QCoreApplication::translate("Dialog", "\345\257\274\345\207\272", nullptr));
+        stateProtocol->setText(QCoreApplication::translate("Dialog", "\346\214\207\344\273\244", nullptr));
+        import_2->setText(QCoreApplication::translate("Dialog", "\345\257\274\345\205\245", nullptr));
     } // retranslateUi
 
 };
