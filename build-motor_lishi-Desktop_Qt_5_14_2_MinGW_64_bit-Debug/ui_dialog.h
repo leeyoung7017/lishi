@@ -29,30 +29,31 @@ public:
     QPushButton *export_2;
     QLabel *stateProtocol;
     QPushButton *import_2;
+    QPushButton *scantube;
 
     void setupUi(QDialog *Dialog)
     {
         if (Dialog->objectName().isEmpty())
             Dialog->setObjectName(QString::fromUtf8("Dialog"));
-        Dialog->resize(778, 499);
+        Dialog->resize(784, 499);
         tableWidget = new QTableWidget(Dialog);
         tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
-        tableWidget->setGeometry(QRect(60, 30, 621, 381));
+        tableWidget->setGeometry(QRect(60, 30, 641, 381));
         addRow = new QPushButton(Dialog);
         addRow->setObjectName(QString::fromUtf8("addRow"));
-        addRow->setGeometry(QRect(60, 440, 75, 23));
+        addRow->setGeometry(QRect(110, 440, 75, 23));
         rmRow = new QPushButton(Dialog);
         rmRow->setObjectName(QString::fromUtf8("rmRow"));
-        rmRow->setGeometry(QRect(140, 440, 75, 23));
+        rmRow->setGeometry(QRect(190, 440, 75, 23));
         send = new QPushButton(Dialog);
         send->setObjectName(QString::fromUtf8("send"));
-        send->setGeometry(QRect(220, 440, 75, 23));
+        send->setGeometry(QRect(270, 440, 75, 23));
         export_2 = new QPushButton(Dialog);
         export_2->setObjectName(QString::fromUtf8("export_2"));
-        export_2->setGeometry(QRect(300, 440, 75, 23));
+        export_2->setGeometry(QRect(430, 440, 75, 23));
         stateProtocol = new QLabel(Dialog);
         stateProtocol->setObjectName(QString::fromUtf8("stateProtocol"));
-        stateProtocol->setGeometry(QRect(600, 440, 111, 20));
+        stateProtocol->setGeometry(QRect(590, 440, 111, 20));
         QFont font;
         font.setFamily(QString::fromUtf8("\346\245\267\344\275\223"));
         font.setPointSize(12);
@@ -62,7 +63,10 @@ public:
         stateProtocol->setAlignment(Qt::AlignCenter);
         import_2 = new QPushButton(Dialog);
         import_2->setObjectName(QString::fromUtf8("import_2"));
-        import_2->setGeometry(QRect(380, 440, 75, 23));
+        import_2->setGeometry(QRect(510, 440, 75, 23));
+        scantube = new QPushButton(Dialog);
+        scantube->setObjectName(QString::fromUtf8("scantube"));
+        scantube->setGeometry(QRect(350, 440, 75, 23));
 
         retranslateUi(Dialog);
 
@@ -78,6 +82,7 @@ public:
         export_2->setText(QCoreApplication::translate("Dialog", "\345\257\274\345\207\272", nullptr));
         stateProtocol->setText(QCoreApplication::translate("Dialog", "\346\214\207\344\273\244", nullptr));
         import_2->setText(QCoreApplication::translate("Dialog", "\345\257\274\345\205\245", nullptr));
+        scantube->setText(QCoreApplication::translate("Dialog", "\350\257\225\347\256\241\346\211\253\347\240\201", nullptr));
     } // retranslateUi
 
 };

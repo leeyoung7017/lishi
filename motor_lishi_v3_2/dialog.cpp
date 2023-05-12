@@ -21,13 +21,18 @@ Dialog::~Dialog()
 
 void Dialog::TableInit()
 {
-    ui->tableWidget->setColumnCount(5);//设置4列
+    ui->tableWidget->setColumnCount(COL);//设置4列
     ui->tableWidget->setRowCount(10);
     row = 10-1;
-    ui->tableWidget->setHorizontalHeaderLabels(QStringList()<< "X轴" << "Y轴" << "Z1轴" << "Z2轴" << "扫码");
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList()<< "X轴" << "Y轴" << "Z1轴" << "Z2轴" << "玻片扫码" << "试管扫码");
     QStringList reset;
-    reset << "0" << "0" << "0" << "0" << "0";
+    reset << "0" << "0" << "0" << "0" << "0" << "0";
     addDataRow(reset);
+    for(int i=0;i<8;i++)
+    {
+        reset << "" << "" << "" << "" << "" << "1";
+        addDataRow(reset);
+    }
 }
 
 void Dialog::on_addRow_clicked()
@@ -70,7 +75,7 @@ void Dialog::on_send_clicked()
     }
 
     for (int row = 0; row < rowCount; ++row) {
-        for (int col = 0; col < colCount; ++col) {
+        for (int col = 0; col < colCount-1; ++col) {//不读取最后一列
             item = ui->tableWidget->item(row, col); // 获取QTableWidgetItem对象
              if(item){
                  switch (col)
@@ -88,11 +93,9 @@ void Dialog::on_send_clicked()
                  continue;
              }
         }
-//        QMessageLogger().debug() << row+1 << "\t" << loc[row].x << "\t" << loc[row].y << "\t" << loc[row].z1 << "\t" << loc[row].z2 << "\t" << loc[row].scan << "\n";
+        QMessageLogger().debug() << row+1 << "\t" << loc_ctrl[row].x << "\t" << loc_ctrl[row].y << "\t" << loc_ctrl[row].z1 << "\t" << loc_ctrl[row].z2 << "\t" << loc_ctrl[row].scan << "\n";
     }
 //    delete loc;
-
-
     //发送复位指令
     sendProtocolToMainWindow(protocol->Protocol_Config(CMD_RESET,0,0));
     seq = 1;
@@ -106,6 +109,21 @@ void Dialog::productProtocol()
     QByteArray data;
     uint32_t motornum = 0;
 
+    if(tubescan_flag!=0)
+    {
+        if(tubescan_flag == 9)
+        {
+            tubescan_flag = 0;
+            ui->stateProtocol->setText("试管扫码完成");
+            return;
+        }
+        QTableWidgetItem *item = ui->tableWidget->item(tubescan_flag++,5); // 获取QTableWidgetItem对象
+        QByteArray data = protocol->Protocol_Config(CMD_MOTORXZ,0,item->text().toUInt());
+        sendProtocolToMainWindow(data);
+
+        QMessageLogger().debug() << item->text().toUInt();
+        return;
+    }
 
     //发送下一个指令
     if(state == STATE_IDLE)
@@ -154,7 +172,6 @@ void Dialog::productProtocol()
     }
     sendProtocolToMainWindow(data);
     getNextState(seq);
-    QMessageLogger().debug() << state;
 }
 
 //判断下一状态
@@ -265,5 +282,18 @@ void Dialog::on_import_2_clicked()
         row = 0;
         file.close();
     }
+
+}
+
+void Dialog::on_scantube_clicked()
+{
+    tubescan_flag = 0;
+    QTableWidgetItem *item;
+    QByteArray data;
+    item = ui->tableWidget->item( tubescan_flag++,5); // 获取QTableWidgetItem对象
+    data = protocol->Protocol_Config(CMD_MOTORXZ,0,item->text().toUInt());
+    sendProtocolToMainWindow(data);
+    QMessageLogger().debug() << item->text().toUInt();
+
 
 }

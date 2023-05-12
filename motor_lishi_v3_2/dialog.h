@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include "scancodegun.h"
 
+#define COL 6
+
 namespace Ui {
 class Dialog;
 }
@@ -36,6 +38,8 @@ private slots:
 
     void on_import_2_clicked();
 
+    void on_scantube_clicked();
+
 public slots:
     void productProtocol();
 signals:
@@ -61,8 +65,10 @@ private:
         STATE_SCAN
     }StateProtocol;
     location_ctrl *loc_ctrl;
+    int32_t tubeloc[9] = {0};
     StateProtocol state;
     ScanCodeGun *scancodegun;
+    int tubescan_flag = 0;;//控制试管电机运动
     int row;
     int seq;
 };
