@@ -6,5 +6,6 @@
         <file>files/information.csv</file>
         <file>files/QCheckBox.csv</file>
         <file>db/leeyoung7017.db</file>
+        <file>log/log.txt</file>
     </qresource>
 </RCC>

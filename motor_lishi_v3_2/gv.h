@@ -22,13 +22,15 @@
 #define TESTNUM 64
 
 
-// #define MOTORPATH "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_1\\files\\QCheckBox.csv"
-#define MOTORPATH           ":/files/QCheckBox.csv"
-// #define INFORMATIONPATH    "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_1\\files\\information.csv"
-#define INFORMATIONPATH      ":/files/information.csv"
-#define DATABASEPATH             "G:\\USER\\Project\\FilmProduct\\motor_lishi\\DataBase\\leeyoung7017.db"
-//#define DATABASEPATH          "./leeyoung.db"
+// #define MOTORPATH    "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\files\\QCheckBox.csv"
+// #define INFORMATIONPATH    "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\files\\information.csv"
+//#define LOGPATH         "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\log\\log.txt"
+#define DATABASEPATH             "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\db\\leeyoung7017.db"
 
+#define MOTORPATH           ":/files/QCheckBox.csv"
+#define INFORMATIONPATH      ":/files/information.csv"
+//#define DATABASEPATH          "./leeyoung.db"
+#define LOGPATH             ":/log/log.txt"
 
 typedef struct{
     uint32_t x;
@@ -99,7 +101,7 @@ extern SerialStruct serialstruct;
 #define FB_RESET0        0x99
 #define FB_RESET1        0x10
 #define FB_CRC0          0xCC
-#define FB_CRC1          0xBB
+#define FB_CRC1          0xDD
 
 
 extern location loc;//坐标位置
@@ -110,6 +112,8 @@ extern uint8_t flag_continue;  //继续指令反馈标志位
 extern uint8_t flag_reset;     //复位指令反馈标志位
 extern uint8_t flag_stop;      //暂停指令反馈标志位
 extern uint8_t flag_run;       //运动指令反馈标志位
+extern uint8_t flag_crc;       //crc指令错误标志位
+extern uint8_t flag_dialog;    //日志窗体开启标志位
 
 extern uint8_t flag_scan_tube;  //试管扫码枪扫描标志位
 extern uint8_t flag_scan_slide; //载波片扫码枪扫描标志位

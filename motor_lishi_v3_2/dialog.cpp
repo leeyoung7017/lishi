@@ -100,24 +100,32 @@ void Dialog::on_send_clicked()
     sendProtocolToMainWindow(protocol->Protocol_Config(CMD_RESET,0,0));
     seq = 1;
 //    getNextState(seq);
-    state = STATE_X;
+    state = STATE_IDLE;
     ui->stateProtocol->setText("指令传输中...");
 }
 
 void Dialog::productProtocol()
 {
     QByteArray data;
+    QTableWidgetItem *item;
     uint32_t motornum = 0;
 
     if(tubescan_flag!=0)
     {
+        ui->stateProtocol->setText("******");
         if(tubescan_flag == 9)
         {
             tubescan_flag = 0;
             ui->stateProtocol->setText("试管扫码完成");
             return;
         }
-        QTableWidgetItem *item = ui->tableWidget->item(tubescan_flag++,5); // 获取QTableWidgetItem对象
+        if(flag_crc)
+        {
+            item = ui->tableWidget->item(tubescan_flag-1,5); // 获取QTableWidgetItem对象
+            flag_crc = 0;
+        }
+        else
+            item = ui->tableWidget->item(tubescan_flag++,5); // 获取QTableWidgetItem对象
         QByteArray data = protocol->Protocol_Config(CMD_MOTORXZ,0,item->text().toUInt());
         sendProtocolToMainWindow(data);
 
@@ -125,7 +133,15 @@ void Dialog::productProtocol()
         return;
     }
 
+    QMessageLogger().debug() << "flag_crc = " << flag_crc;
     //发送下一个指令
+    if(flag_crc)
+    {
+
+        flag_crc = 0;
+    }
+    else
+        getNextState(seq);
     if(state == STATE_IDLE)
     {
         seq++;
@@ -141,9 +157,6 @@ void Dialog::productProtocol()
         }
         getNextState(seq);
     }
-
-
-
 
     switch(state)
     {
@@ -171,7 +184,6 @@ void Dialog::productProtocol()
             break;
     }
     sendProtocolToMainWindow(data);
-    getNextState(seq);
 }
 
 //判断下一状态
@@ -202,6 +214,11 @@ void Dialog::getNextState(int seq)
     if(loc_ctrl[seq].scan != loc_ctrl[seq-1].scan  && state < STATE_SCAN)
     {
         state = STATE_SCAN;
+        return;
+    }
+    if(state == STATE_IDLE)
+    {
+        state = STATE_X;
         return;
     }
     state = STATE_IDLE;
@@ -294,6 +311,13 @@ void Dialog::on_scantube_clicked()
     data = protocol->Protocol_Config(CMD_MOTORXZ,0,item->text().toUInt());
     sendProtocolToMainWindow(data);
     QMessageLogger().debug() << item->text().toUInt();
+}
 
 
+
+void Dialog::closeEvent(QCloseEvent *event)
+{
+    flag_dialog = 0;
+    QMessageLogger().debug() << "flag_dialog closed";
+    event->accept();
 }

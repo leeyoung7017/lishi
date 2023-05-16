@@ -146,6 +146,7 @@ void file::logInit()
     {
         return;
     }
+
     file.close();
 }
 
@@ -158,6 +159,7 @@ void file::logWrite(int flag, QByteArray data, QTextEdit *lineedit)
     QString str;
     if (!file.open(QIODevice::Append | QIODevice::Text)) {
         // 打开文件失败
+        qDebug() << "open file error";
         return ;
     }
     QTextStream stream(&file);

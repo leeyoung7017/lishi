@@ -30,48 +30,40 @@ void SerialThread::SerialReceive()
        QByteArray data = nullptr;
        data = SerialPort->readAll();
 //       file->logWrite(READ,data,ui->log);
-       if(data.at(0)==0x55 && data.at(1)==(char)0xAA)
+       if((uint8_t)(data.at(0))==0x55 && (uint8_t)data.at(1)==0xAA)
        {
-           switch(data.at(2))
+           switch((uint8_t)data.at(2))
            {
                case FB_OK0:
-                   if(data.at(3)==(char)FB_OK1)
+                   if((uint8_t)data.at(3)==FB_OK1)
                    {
-                       QMessageBox::critical(nullptr, tr("提示"), tr("电机运动完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
                        flag_run = 1;
+                       QMessageLogger().debug() << "flag_run =" << flag_run;
                    }
                    break;
                case FB_RESET0:
-                   if(data.at(3) == (char)(FB_RESET1))
+                   if((uint8_t)data.at(3) == (FB_RESET1))
                    {
                        flag_reset= 1;
-                       QMessageBox::critical(nullptr, tr("提示"), tr("复位指令完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+                       QMessageLogger().debug() << "flag_reset =" << flag_reset;
                    }
                    break;
-   //            case 0x01:
-   //                if(data.at(3)==0x00)
-   //                    flag_stop = 1;
-   //                else if(data.at(3) == (char)(0xff))
-   //                    QMessageBox::critical(nullptr, tr("提示"), tr("停止指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-   //                break;
-   //            case 0x02:
-   //                if(data.at(3)==0x00)
-   //                    flag_continue = 1;
-   //                else if(data.at(3) == (char)(0xff))
-   //                    QMessageBox::critical(nullptr, tr("提示"), tr("继续运动指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
-   //                break;
                case FB_CRC0:
-                   if(data.at(3) == (char)FB_CRC1)
-                       QMessageBox::critical(nullptr, tr("提示"), tr("校验码指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+                   if((uint8_t)data.at(3) == FB_CRC1)
+                   {
+                       flag_crc = 1;
+                       QMessageLogger().debug() << "thread flag_crc =" << flag_crc;
+                   }
+
                    break;
                default:
                    break;
            }
 
+           data.append(flag_run | flag_crc << 2 | flag_reset << 1);
            if(flag_run)
            {
    //            if()//判断是否为x,y,z轴的运动电机
-               //接收完成之后记录位置
                if(loc_str == "x")  loc.x = step;
                else if(loc_str == "y") loc.y = step;
                else if(loc_str == "z") loc.z = step;
@@ -80,17 +72,14 @@ void SerialThread::SerialReceive()
                if(loc_str == "tube")   loc.tube = step;
 
                flag_run = 0;
-               qDebug() << "flag_run";
            }
            if(flag_stop)
            {
                flag_stop = 0;
-               qDebug() << "flag_stop";
            }
            if(flag_continue)
            {
                flag_continue = 0;
-               qDebug() << "flag_continue";
            }
            if(flag_reset)
            {

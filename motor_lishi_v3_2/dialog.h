@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QCloseEvent>
 #include "scancodegun.h"
 
 #define COL 6
@@ -27,6 +28,7 @@ public:
     void TableInit();
     void addDataRow(QStringList str);
     void getNextState(int seq);
+    void closeEvent(QCloseEvent *event);//复写closeEvent函数
 private slots:
     void on_addRow_clicked();
 

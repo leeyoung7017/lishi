@@ -215,14 +215,26 @@ void MainWindow::SerialReceive(QByteArray data, location loc)
 {
 
 
-
     //窗体已打开
-    if(dialog->isVisible())
+    if(flag_dialog)
     {
         emit sendToDialog();
     }
     else
     {
+        switch((uint8_t)(data.at(data.size()-1)))
+        {
+            case 4:
+                QMessageBox::critical(this, tr("提示"), tr("校验码指令接收错误"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+                break;
+            case 2:
+                QMessageBox::critical(this, tr("提示"), tr("复位指令完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+                break;
+            case 1:
+                QMessageBox::critical(this, tr("提示"), tr("电机运动完成"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+                break;
+            default: break;
+        }
         file->logWrite(READ,data,ui->log);//写入日志
     }
 
@@ -285,7 +297,7 @@ void MainWindow::on_protocol_clicked()
     QByteArray dir;
     uint32_t motor = 0;
 //    uint16_t speed[MOTORNUM];//暂时先不需要速度
-
+    flag_crc = 0;//将crc错误清除
 
     //获取选中电机数
     for(int i=0;i<MOTORNUM;i++)
@@ -357,17 +369,18 @@ void MainWindow::on_protocol_clicked()
 void MainWindow::on_run_clicked()
 {
     QByteArray data;
+    flag_crc = 0;//将crc错误清除
     if(ui->run->text() == "停止")
     {
 //        data = protocol->Protocol_Stop();
-        data = protocol->Protocol_Config(CMD_CONTINUE,motor_g,step_g);  //停止指令
+        data = protocol->Protocol_Config(CMD_STOP,motor_g,step_g);  //停止指令
         ui->run->setText("继续");
     }
     else
     {
 //        data = protocol->Protocol_Continue();
 
-        data = protocol->Protocol_Config(CMD_STOP,motor_g,step_g);  //继续指令
+        data = protocol->Protocol_Config(CMD_CONTINUE,motor_g,step_g);  //继续指令
         ui->run->setText("停止");
     }
 
@@ -379,9 +392,8 @@ void MainWindow::on_run_clicked()
 void MainWindow::on_reset_clicked()
 {
     QByteArray data;
-//    data = protocol->Protocol_Reset();
+    flag_crc = 0;//将crc错误清除
     data = protocol->Protocol_Config(CMD_RESET,0,0);  //继续指令
-//    SerialPort->write(data);
     sendSerial(data);
     file->logWrite(WRITE,data,ui->log);
     data.clear();
@@ -496,6 +508,7 @@ void MainWindow::on_action_triggered()
 {
     dialog = new Dialog();
     dialog->show();
+    flag_dialog = 1;
     connect(this,SIGNAL(sendToDialog()),dialog,SLOT(productProtocol()));//发送完成指令的信号
     connect(dialog,SIGNAL(sendProtocolToMainWindow(QByteArray)),this,SLOT(sendProtocoltoSerial(QByteArray)));//串口发送指令
 }
