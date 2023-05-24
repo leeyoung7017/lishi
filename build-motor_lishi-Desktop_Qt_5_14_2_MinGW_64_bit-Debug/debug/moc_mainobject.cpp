@@ -7,7 +7,7 @@
 *****************************************************************************/
 
 #include <memory>
-#include "../../motor_lishi_v3_1/screen/mainobject.h"
+#include "../../motor_lishi_v3_2/screen/mainobject.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)

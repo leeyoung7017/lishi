@@ -5,6 +5,7 @@
 #include <QSerialPortInfo>
 #include <QSerialPort>
 #include <QMessageBox>
+#include <QTimer>
 #include "gv.h"
 
 namespace Ui {
@@ -23,11 +24,13 @@ signals :
     void send();
 private slots:
     void on_buttonBox_accepted();
+//    void timeoutSlot();
 private:
     Ui::serial *ui;
     QSerialPort *SerialPort;
     QSerialPort *ScanSlideSerialPort;
     QSerialPort *ScanTubeSerialPort;
+    QTimer *tim;
 };
 
 #endif // SERIAL_H

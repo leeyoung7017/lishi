@@ -9,6 +9,11 @@ serial::serial(QWidget *parent) :
 {
     ui->setupUi(this);
     SerialInfo();
+//    tim = new QTimer();
+//    connect(tim,SIGNAL(timeout()),this,SLOT(timeoutSlot()));
+//    tim->start(500);
+
+
 }
 
 serial::~serial()
@@ -16,18 +21,23 @@ serial::~serial()
     delete ui;
 }
 
+//void serial::timeoutSlot()
+//{
+//    SerialInfo();
+//}
+
+
 void serial::SerialInfo(void)
 {
     QStringList m_serialPortName;
     uint8_t i=0;
+    ui->Com->clear();
     foreach(const QSerialPortInfo &info,QSerialPortInfo::availablePorts())
     {
         m_serialPortName << info.portName();
         ui->Com->addItem(info.portName());
         i++;
     }
-//    if(i>1) ui->Com->setItemText(0,m_serialPortName.at(0));
-
 }
 
 

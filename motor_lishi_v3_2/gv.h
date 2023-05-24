@@ -24,13 +24,13 @@
 
 // #define MOTORPATH    "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\files\\QCheckBox.csv"
 // #define INFORMATIONPATH    "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\files\\information.csv"
-//#define LOGPATH         "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\log\\log.txt"
+#define LOGPATH         "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\log\\log.txt"
 #define DATABASEPATH             "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\db\\leeyoung7017.db"
 
 #define MOTORPATH           ":/files/QCheckBox.csv"
 #define INFORMATIONPATH      ":/files/information.csv"
 //#define DATABASEPATH          "./leeyoung.db"
-#define LOGPATH             ":/log/log.txt"
+//#define LOGPATH             ":/log/log.txt"
 
 typedef struct{
     uint32_t x;

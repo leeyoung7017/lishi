@@ -19,9 +19,13 @@ SerialThread::SerialThread(QObject *parent) : QObject(parent)
 void SerialThread::SerialOpen()
 {
     SerialPort->close();
+
     Serial_Init(SerialPort);
     connect(SerialPort,SIGNAL(readyRead()),this,SLOT(SerialReceive()));//串口打开，并绑定接收槽函数
-    SerialPort->open(QIODevice::ReadWrite);
+    if(!SerialPort->open(QIODevice::ReadWrite))
+    {
+//        QMessageBox::critical(nullptr, "警告", "该串口已打开", QMessageBox::Yes|QMessageBox::No);
+    }
 }
 
 void SerialThread::SerialReceive()
@@ -110,7 +114,10 @@ void ScanTubeThread::ScanTubeOpen()
     ScanTubePort->close();
     Serial_Init(ScanTubePort);
     connect(ScanTubePort,SIGNAL(readyRead()),this,SLOT(ScanTubeSerialReceive()));//串口打开，并绑定接收槽函数
-    ScanTubePort->open(QIODevice::ReadWrite);
+    if(!ScanTubePort->open(QIODevice::ReadWrite))
+    {
+//        QMessageBox::critical(nullptr, "警告", "该串口已打开", QMessageBox::Yes|QMessageBox::No);
+    }
 }
 
 void ScanTubeThread::ScanTubeSerialReceive()
@@ -169,7 +176,10 @@ void ScanSlideThread::ScanSlideOpen()
     ScanSlidePort->close();
     Serial_Init(ScanSlidePort);
     connect(ScanSlidePort,SIGNAL(readyRead()),this,SLOT(ScanSlideSerialReceive()));//串口打开，并绑定接收槽函数
-    ScanSlidePort->open(QIODevice::ReadWrite);
+    if(!ScanSlidePort->open(QIODevice::ReadWrite))
+    {
+//        QMessageBox::critical(nullptr, "警告", "该串口已打开", QMessageBox::Yes|QMessageBox::No);
+    }
 }
 
 void ScanSlideThread::ScanSlideSerialReceive()

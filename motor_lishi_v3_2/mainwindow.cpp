@@ -511,6 +511,16 @@ void MainWindow::on_action_triggered()
     flag_dialog = 1;
     connect(this,SIGNAL(sendToDialog()),dialog,SLOT(productProtocol()));//发送完成指令的信号
     connect(dialog,SIGNAL(sendProtocolToMainWindow(QByteArray)),this,SLOT(sendProtocoltoSerial(QByteArray)));//串口发送指令
+    connect(dialog,SIGNAL(close()),this,SLOT(DialogClose()));
+        ui->reset->setEnabled(false);
+        ui->protocol->setEnabled(false);
+        ui->SlideButton->setEnabled(false);
+        ui->TubeBotton->setEnabled(false);
+        ui->save->setEnabled(false);
+        ui->fpga->setEnabled(false);
+        ui->tube->setEnabled(false);
+        ui->slide->setEnabled(false);
+        ui->action->setEnabled(false);
 }
 void MainWindow::sendProtocoltoSerial(QByteArray data)
 {
@@ -518,4 +528,20 @@ void MainWindow::sendProtocoltoSerial(QByteArray data)
         sendSerial(data);
     else if(data.at(0) == 0x16)
         sendScanSlide(data);
+}
+
+
+void MainWindow::DialogClose()
+{
+    delete dialog;  //防止每次进行串口传输时，触发两次窗口
+    ui->reset->setEnabled(true);
+    ui->protocol->setEnabled(true);
+    ui->SlideButton->setEnabled(true);
+    ui->TubeBotton->setEnabled(true);
+    ui->save->setEnabled(true);
+
+    ui->fpga->setEnabled(true);
+    ui->tube->setEnabled(true);
+    ui->slide->setEnabled(true);
+    ui->action->setEnabled(true);
 }

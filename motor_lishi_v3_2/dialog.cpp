@@ -11,6 +11,7 @@ Dialog::Dialog(QWidget *parent) :
     scancodegun = new ScanCodeGun();
     row = 0;
     seq = 0;
+    state = STATE_IDLE;
     TableInit();
 }
 
@@ -28,11 +29,11 @@ void Dialog::TableInit()
     QStringList reset;
     reset << "0" << "0" << "0" << "0" << "0" << "0";
     addDataRow(reset);
-    for(int i=0;i<8;i++)
-    {
-        reset << "" << "" << "" << "" << "" << "1";
-        addDataRow(reset);
-    }
+//    for(int i=0;i<8;i++)
+//    {
+//        reset << "" << "" << "" << "" << "" << "1";
+//        addDataRow(reset);
+//    }
 }
 
 void Dialog::on_addRow_clicked()
@@ -62,7 +63,10 @@ void Dialog::on_send_clicked()
 {
     //指令解析//把所有指令解析一遍
     QTableWidgetItem *item;
-    int rowCount = ui->tableWidget->rowCount(); // 获取行数
+    int rowCount = ui->tableWidget->rowCount()+1; // 获取行数
+    //加1的目的：
+    //      为了实现结束位置判断是否为-1，
+    //              因此，在结束坐标之后需要多加一组数据，作为结束判断
     int colCount = ui->tableWidget->columnCount(); // 获取列数
     loc_ctrl = new location_ctrl[rowCount];
     for (int row = 0; row < rowCount; ++row)
@@ -113,7 +117,8 @@ void Dialog::productProtocol()
     if(tubescan_flag!=0)
     {
         ui->stateProtocol->setText("******");
-        if(tubescan_flag == 9)
+        int rowCount = ui->tableWidget->rowCount();
+        if(tubescan_flag == rowCount)
         {
             tubescan_flag = 0;
             ui->stateProtocol->setText("试管扫码完成");
@@ -126,10 +131,10 @@ void Dialog::productProtocol()
         }
         else
             item = ui->tableWidget->item(tubescan_flag++,5); // 获取QTableWidgetItem对象
-        QByteArray data = protocol->Protocol_Config(CMD_MOTORXZ,0,item->text().toUInt());
+        QByteArray data = protocol->Protocol_Config(CMD_MOTORXZ,0x40,item->text().toUInt());
         sendProtocolToMainWindow(data);
 
-        QMessageLogger().debug() << item->text().toUInt();
+//        QMessageLogger().debug() << item->text().toUInt();
         return;
     }
 
@@ -221,7 +226,12 @@ void Dialog::getNextState(int seq)
         state = STATE_X;
         return;
     }
+//    if(loc_ctrl[seq].x == -1)
+//    {
+
+//    }
     state = STATE_IDLE;
+    return;
 }
 
 void Dialog::on_export_2_clicked()
@@ -250,9 +260,9 @@ void Dialog::on_export_2_clicked()
         str.append("\n");
     }
 
-
-    QString path = QFileDialog::getExistingDirectory(this, tr("选择文件"), QDir::currentPath());
-    path += "/流程.csv"; // 文件路径
+    QString path = QFileDialog::getSaveFileName(this,tr("选择路径"),  QDir::currentPath(),tr("excel (*.csv)"));
+//    QString path = QFileDialog::getExistingDirectory(this, tr("选择文件"), QDir::currentPath());
+//    path += "/流程.csv"; // 文件路径
     QString content = str; // 要写入的字符串
 
     QFile file(path);
@@ -287,7 +297,7 @@ void Dialog::on_import_2_clicked()
                 for(int i=0; i<elements.size(); i++){
                     if(row!=0)
                     {
-                        if(i==4) elements[i].remove("\r\n");
+                        if(i==5) elements[i].remove("\r\n");
                         QTableWidgetItem *item = new QTableWidgetItem(elements[i]);
                         ui->tableWidget->setItem(row-1, i, item);
                     }
@@ -299,7 +309,6 @@ void Dialog::on_import_2_clicked()
         row = 0;
         file.close();
     }
-
 }
 
 void Dialog::on_scantube_clicked()
@@ -307,9 +316,10 @@ void Dialog::on_scantube_clicked()
     tubescan_flag = 0;
     QTableWidgetItem *item;
     QByteArray data;
-    item = ui->tableWidget->item( tubescan_flag++,5); // 获取QTableWidgetItem对象
-    data = protocol->Protocol_Config(CMD_MOTORXZ,0,item->text().toUInt());
+    item = ui->tableWidget->item(tubescan_flag,5); // 获取QTableWidgetItem对象
+    data = protocol->Protocol_Config(CMD_MOTORXZ,0x40,item->text().toUInt());
     sendProtocolToMainWindow(data);
+    tubescan_flag = 1;
     QMessageLogger().debug() << item->text().toUInt();
 }
 
@@ -318,6 +328,11 @@ void Dialog::on_scantube_clicked()
 void Dialog::closeEvent(QCloseEvent *event)
 {
     flag_dialog = 0;
+    seq = 0;
+    row = 0;
+    state = STATE_IDLE;
     QMessageLogger().debug() << "flag_dialog closed";
+    close();
     event->accept();
+
 }

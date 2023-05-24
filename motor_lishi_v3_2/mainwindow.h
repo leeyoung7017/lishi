@@ -80,6 +80,8 @@ private slots:
 
     void sendProtocoltoSerial(QByteArray data);
 
+    void DialogClose(); //日志窗体关闭
+
 private:
     Ui::MainWindow *ui;
     serial *serialport;

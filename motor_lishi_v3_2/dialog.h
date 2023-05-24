@@ -46,7 +46,7 @@ public slots:
     void productProtocol();
 signals:
     void sendProtocolToMainWindow(QByteArray data);
-
+    void close();
 private:
     Ui::Dialog *ui;
     Protocol *protocol;
