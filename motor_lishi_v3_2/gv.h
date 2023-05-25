@@ -24,7 +24,7 @@
 
 // #define MOTORPATH    "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\files\\QCheckBox.csv"
 // #define INFORMATIONPATH    "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\files\\information.csv"
-#define LOGPATH         "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\log\\log.txt"
+#define LOGPATH         "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\log\\"
 #define DATABASEPATH             "G:\\USER\\Project\\FilmProduct\\lishi\\motor_lishi_v3_2\\db\\leeyoung7017.db"
 
 #define MOTORPATH           ":/files/QCheckBox.csv"

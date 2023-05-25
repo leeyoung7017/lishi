@@ -141,8 +141,13 @@ QStringList file::motorRead(QString path)
 void file::logInit()
 {
     QString filepath = LOGPATH;
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QLocale locale(QLocale::English);
+    QString formattedDateTime = locale.toString(currentDateTime, "yyyy_MMMM_d");
+    filepath = filepath+formattedDateTime+"_log.txt";
+    QMessageLogger().debug() << filepath;
     QFile file(filepath);
-    if(!file.open(QIODevice::WriteOnly))
+    if(!file.open(QIODevice::WriteOnly|QIODevice::Text))
     {
         return;
     }
@@ -152,10 +157,17 @@ void file::logInit()
 
 void file::logWrite(int flag, QByteArray data, QTextEdit *lineedit)
 {
+    QString filepath = LOGPATH;
     QDateTime currentDateTime = QDateTime::currentDateTime();
     QLocale locale(QLocale::English);
     QString formattedDateTime = locale.toString(currentDateTime, "ddd MMMM d yyyy hh:mm:ss AP");
-    QFile file(LOGPATH);
+
+
+    QString name = locale.toString(currentDateTime, "yyyy_MMMM_d");
+    filepath = filepath+name+"_log.txt";
+    QMessageLogger().debug() << filepath;
+
+    QFile file(filepath);
     QString str;
     if (!file.open(QIODevice::Append | QIODevice::Text)) {
         // 打开文件失败
@@ -179,7 +191,14 @@ void file::logWrite(int flag, QByteArray data, QTextEdit *lineedit)
 
 void file::logWriteUI(QTextEdit *edit)
 {
-    QFile file(LOGPATH);
+    QString filepath = LOGPATH;
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QLocale locale(QLocale::English);
+    QString name = locale.toString(currentDateTime, "yyyy_MMMM_d");
+    filepath = filepath+name+"_log.txt";
+    QMessageLogger().debug() << filepath;
+
+    QFile file(filepath);
     QString str;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         // 打开文件失败

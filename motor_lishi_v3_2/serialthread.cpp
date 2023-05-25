@@ -1,5 +1,7 @@
 #include "serialthread.h"
 
+enum Except{ss,ssss};
+
 //串口初始化并打开
 static void Serial_Init(QSerialPort *serialport)
 {
@@ -31,69 +33,72 @@ void SerialThread::SerialOpen()
 void SerialThread::SerialReceive()
 {
     QMessageBox Mbox;
-       QByteArray data = nullptr;
-       data = SerialPort->readAll();
-//       file->logWrite(READ,data,ui->log);
-       if((uint8_t)(data.at(0))==0x55 && (uint8_t)data.at(1)==0xAA)
+    QByteArray data = nullptr;
+    data = SerialPort->readAll();
+
+    //       file->logWrite(READ,data,ui->log);
+       if(data.size() < 2) return;
+   if((uint8_t)(data.at(0))==0x55 && (uint8_t)data.at(1)==0xAA)
+   {
+       switch((uint8_t)data.at(2))
        {
-           switch((uint8_t)data.at(2))
-           {
-               case FB_OK0:
-                   if((uint8_t)data.at(3)==FB_OK1)
-                   {
-                       flag_run = 1;
-                       QMessageLogger().debug() << "flag_run =" << flag_run;
-                   }
-                   break;
-               case FB_RESET0:
-                   if((uint8_t)data.at(3) == (FB_RESET1))
-                   {
-                       flag_reset= 1;
-                       QMessageLogger().debug() << "flag_reset =" << flag_reset;
-                   }
-                   break;
-               case FB_CRC0:
-                   if((uint8_t)data.at(3) == FB_CRC1)
-                   {
-                       flag_crc = 1;
-                       QMessageLogger().debug() << "thread flag_crc =" << flag_crc;
-                   }
+           case FB_OK0:
+               if((uint8_t)data.at(3)==FB_OK1)
+               {
+                   flag_run = 1;
+                   QMessageLogger().debug() << "flag_run =" << flag_run;
+               }
+               break;
+           case FB_RESET0:
+               if((uint8_t)data.at(3) == (FB_RESET1))
+               {
+                   flag_reset= 1;
+                   QMessageLogger().debug() << "flag_reset =" << flag_reset;
+               }
+               break;
+           case FB_CRC0:
+               if((uint8_t)data.at(3) == FB_CRC1)
+               {
+                   flag_crc = 1;
+                   QMessageLogger().debug() << "thread flag_crc =" << flag_crc;
+               }
 
-                   break;
-               default:
-                   break;
-           }
-
-           data.append(flag_run | flag_crc << 2 | flag_reset << 1);
-           if(flag_run)
-           {
-   //            if()//判断是否为x,y,z轴的运动电机
-               if(loc_str == "x")  loc.x = step;
-               else if(loc_str == "y") loc.y = step;
-               else if(loc_str == "z") loc.z = step;
-
-   //            if()//判断是否为试管运动电机
-               if(loc_str == "tube")   loc.tube = step;
-
-               flag_run = 0;
-           }
-           if(flag_stop)
-           {
-               flag_stop = 0;
-           }
-           if(flag_continue)
-           {
-               flag_continue = 0;
-           }
-           if(flag_reset)
-           {
-               //完成复位
-               loc.x = 0;  loc.y = 0;  loc.z = 0;
-               flag_reset = 0;
-               qDebug() << "flag_reset";
-           }
+               break;
+           default:
+               break;
        }
-       send(data,loc);
+
+       data.append(flag_run | flag_crc << 2 | flag_reset << 1);
+       if(flag_run)
+       {
+//            if()//判断是否为x,y,z轴的运动电机
+           if(loc_str == "x")  loc.x = step;
+           else if(loc_str == "y") loc.y = step;
+           else if(loc_str == "z") loc.z = step;
+
+//            if()//判断是否为试管运动电机
+           if(loc_str == "tube")   loc.tube = step;
+
+           flag_run = 0;
+       }
+       if(flag_stop)
+       {
+           flag_stop = 0;
+       }
+       if(flag_continue)
+       {
+           flag_continue = 0;
+       }
+       if(flag_reset)
+       {
+           //完成复位
+           loc.x = 0;  loc.y = 0;  loc.z = 0;
+           flag_reset = 0;
+           qDebug() << "flag_reset";
+       }
+   }
+   send(data,loc);
+
 
 }
 
@@ -126,7 +131,7 @@ void ScanTubeThread::ScanTubeSerialReceive()
     data = scan->Scan_Decode_End();
     ScanTubePort->write(data);
     QString str_tube = ScanTubePort->readAll();
-
+    if(str_tube.size()<2) return;
     flag_scan_tube = 1;
     //将数据记录在map中
     tubes_map[str_tube] = tube_loc[tubes_times];
@@ -188,6 +193,7 @@ void ScanSlideThread::ScanSlideSerialReceive()
     data = scan->Scan_Decode_End();
     ScanSlidePort->write(data);
     QString str_slide = ScanSlidePort->readAll();
+    if(str_slide.size() < 2) return;
     flag_scan_slide = 1;
     send(str_slide);
 }
