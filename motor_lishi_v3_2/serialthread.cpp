@@ -1,4 +1,5 @@
 #include "serialthread.h"
+#include <QSerialPortInfo>
 
 enum Except{ss,ssss};
 
@@ -10,22 +11,31 @@ static void Serial_Init(QSerialPort *serialport)
     serialport->setDataBits(serialstruct.data);
     serialport->setParity(serialstruct.parity);
     serialport->setStopBits(serialstruct.stop);
+    serialport->setFlowControl(QSerialPort::NoFlowControl);
 }
 
 SerialThread::SerialThread(QObject *parent) : QObject(parent)
 {
 //    QThread *sub = new QThread;
-    SerialPort = new QSerialPort;
+    SerialPort = new QSerialPort();
+    QMessageLogger().debug() << "SerialPort current thread ID :" <<QThread::currentThreadId();
+    connect(SerialPort,SIGNAL(readyRead()),this,SLOT(SerialReceive()));//串口打开，并绑定接收槽函数
+}
+
+void SerialThread::SerialClose()
+{
+    SerialPort->close();
 }
 
 void SerialThread::SerialOpen()
 {
-    SerialPort->close();
-
+    QMessageLogger().debug() << "SerialPort current thread ID :" <<QThread::currentThreadId();
+    if(SerialPort->isOpen())
+        SerialPort->close();
     Serial_Init(SerialPort);
-    connect(SerialPort,SIGNAL(readyRead()),this,SLOT(SerialReceive()));//串口打开，并绑定接收槽函数
     if(!SerialPort->open(QIODevice::ReadWrite))
     {
+        QMessageLogger().debug() << "serial open failed";
 //        QMessageBox::critical(nullptr, "警告", "该串口已打开", QMessageBox::Yes|QMessageBox::No);
     }
 }
@@ -110,19 +120,29 @@ void SerialThread::SerialSend(QByteArray data)
 ScanTubeThread::ScanTubeThread(QObject *parent) : QObject(parent)
 {
 //    QThread *sub = new QThread;
-    ScanTubePort = new QSerialPort;
+    ScanTubePort = new QSerialPort();
+    QMessageLogger().debug() << "ScanTubePort current thread ID :" <<QThread::currentThreadId();
+    connect(ScanTubePort,SIGNAL(readyRead()),this,SLOT(ScanTubeSerialReceive()));//串口打开，并绑定接收槽函数
 
+}
+
+void ScanTubeThread::ScanTubeClose()
+{
+    ScanTubePort->close();
 }
 
 void ScanTubeThread::ScanTubeOpen()
 {
-    ScanTubePort->close();
+    QMessageLogger().debug() << "ScanTubePort current thread ID :" <<QThread::currentThreadId();
+    if(ScanTubePort->isOpen())
+        ScanTubePort->close();
     Serial_Init(ScanTubePort);
-    connect(ScanTubePort,SIGNAL(readyRead()),this,SLOT(ScanTubeSerialReceive()));//串口打开，并绑定接收槽函数
     if(!ScanTubePort->open(QIODevice::ReadWrite))
     {
+        QMessageLogger().debug() << "Tube serial open failed";
 //        QMessageBox::critical(nullptr, "警告", "该串口已打开", QMessageBox::Yes|QMessageBox::No);
     }
+    ScanTubePort->setBaudRate(QSerialPort::Baud115200);
 }
 
 void ScanTubeThread::ScanTubeSerialReceive()
@@ -139,12 +159,12 @@ void ScanTubeThread::ScanTubeSerialReceive()
     tubes_times++;
     if(tubes_times%8==0)
     {
-        qDebug() << "tubes have already scaned\n";//一批试管完成
+        qDebug() << "tubes have already scaned";//一批试管完成
 
     }
     if(tubes_times == 8)
     {
-        qDebug() << "ALL tubes have already scaned\n";//所有试管完成
+        qDebug() << "ALL tubes have already scaned";//所有试管完成
 
         //开始向结构体数据库传递数据
         for(int i=0;i<8;i++)
@@ -173,18 +193,30 @@ void ScanTubeThread::ScanTubeSerialSend(QByteArray data)
 ScanSlideThread::ScanSlideThread(QObject *parent) : QObject(parent)
 {
 //    QThread *sub = new QThread;
-    ScanSlidePort = new QSerialPort;
+    ScanSlidePort = new QSerialPort();
+//    QMessageLogger().debug() << "ScanSlidePort current thread ID :" <<QThread::currentThreadId();
+    connect(ScanSlidePort,SIGNAL(readyRead()),this,SLOT(ScanSlideSerialReceive()));//串口打开，并绑定接收槽函数
+}
+
+void ScanSlideThread::ScanSlideClose()
+{
+    ScanSlidePort->close();
 }
 
 void ScanSlideThread::ScanSlideOpen()
 {
-    ScanSlidePort->close();
+    QMessageLogger().debug() << "ScanSlidePort current thread ID :" <<QThread::currentThreadId();
+    if(ScanSlidePort->isOpen())
+        ScanSlidePort->close();
+//    serialstruct.baud = QSerialPort::Baud9600;
     Serial_Init(ScanSlidePort);
-    connect(ScanSlidePort,SIGNAL(readyRead()),this,SLOT(ScanSlideSerialReceive()));//串口打开，并绑定接收槽函数
     if(!ScanSlidePort->open(QIODevice::ReadWrite))
     {
+        QMessageLogger().debug() << "slide serial open failed";
 //        QMessageBox::critical(nullptr, "警告", "该串口已打开", QMessageBox::Yes|QMessageBox::No);
     }
+
+    ScanSlidePort->setBaudRate(QSerialPort::Baud115200);
 }
 
 void ScanSlideThread::ScanSlideSerialReceive()

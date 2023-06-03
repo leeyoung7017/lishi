@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
 
     MainWindow m;
     m.show();
+//    serial s;
+//    s.show();
 
 //    Q_INIT_RESOURCE(res);
 //    sqlite *sql = new sqlite();

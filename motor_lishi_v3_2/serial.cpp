@@ -2,6 +2,7 @@
 #include "serial.h"
 #include "ui_serial.h"
 #include <QThread>
+#include <QDebug>
 
 serial::serial(QWidget *parent) :
     QDialog(parent),
@@ -36,14 +37,13 @@ void serial::SerialInfo(void)
     {
         m_serialPortName << info.portName();
         ui->Com->addItem(info.portName());
+        qDebug()<<info.description();
         i++;
     }
 }
 
-
-void serial::on_buttonBox_accepted()
+void serial::on_ok_clicked()
 {
-
     switch(ui->Baud->currentIndex())
     {
         case 0:
@@ -102,8 +102,17 @@ void serial::on_buttonBox_accepted()
         default:
             break;
     }
-
     serialstruct.com = ui->Com->currentText();
+    this->close();
     emit send();
+
+
+//    ui->close();
+//    close();
 }
 
+void serial::on_cancel_clicked()
+{
+    emit closed();
+    this->close();
+}

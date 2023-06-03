@@ -14,6 +14,7 @@ public:
     explicit SerialThread(QObject *parent = nullptr);
     QSerialPort *SerialPort;
 public slots:
+    void SerialClose();
     void SerialOpen();
     void SerialReceive();
     void SerialSend(QByteArray data);
@@ -31,6 +32,7 @@ public:
     explicit ScanTubeThread(QObject *parent = nullptr);
     QSerialPort *ScanTubePort;
 public slots:
+    void ScanTubeClose();
     void ScanTubeOpen();
     void ScanTubeSerialReceive();
     void ScanTubeSerialSend(QByteArray data);
@@ -46,6 +48,7 @@ public:
     explicit ScanSlideThread(QObject *parent = nullptr);
     QSerialPort *ScanSlidePort;
 public slots:
+    void ScanSlideClose();
     void ScanSlideOpen();
     void ScanSlideSerialReceive();
     void ScanSlideSerialSend(QByteArray data);

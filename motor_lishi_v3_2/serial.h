@@ -22,9 +22,13 @@ public:
     void SerialInfo();
 signals :
     void send();
+    void closed();
 private slots:
-    void on_buttonBox_accepted();
-//    void timeoutSlot();
+
+    void on_ok_clicked();
+
+    void on_cancel_clicked();
+
 private:
     Ui::serial *ui;
     QSerialPort *SerialPort;

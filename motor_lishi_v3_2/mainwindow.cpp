@@ -19,10 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->ScanSlideBotton->setVisible(false);
     ui->ScanTubeBotton->setVisible(false);
 
-    serialport = new serial();
-    scanslideport = new serial();
-    scantubeport = new serial();
-
     List_Init();
 
     QMessageLogger().debug() << "mainwindow current thread ID :" <<QThread::currentThreadId();
@@ -57,20 +53,21 @@ MainWindow::~MainWindow()
 
 void MainWindow::SerialThreadInit()
 {
-    QThread *sub_serial = new QThread;
-    serialthread = new SerialThread;
-    serialthread->moveToThread(sub_serial);
-    sub_serial->start(QThread::NormalPriority);
+    serialport = new serial();
+    scanslideport = new serial();
+    scantubeport = new serial();
 
-    QThread *sub_slide = new QThread;
+    sub_slide = new QThread();
     scanslidethread = new ScanSlideThread;
     scanslidethread->moveToThread(sub_slide);
-    sub_slide->start(QThread::NormalPriority);
 
-    QThread *sub_tube = new QThread;
+    sub_tube = new QThread();
     scantubethread = new ScanTubeThread;
     scantubethread->moveToThread(sub_tube);
-    sub_tube->start(QThread::NormalPriority);
+
+    sub_serial = new QThread();
+    serialthread = new SerialThread;
+    serialthread->moveToThread(sub_serial);
 
     qRegisterMetaType<location>("location");
 
@@ -83,6 +80,22 @@ void MainWindow::SerialThreadInit()
     connect(this,SIGNAL(sendSerial(QByteArray)),serialthread,SLOT(SerialSend(QByteArray)));
     connect(this,SIGNAL(sendScanSlide(QByteArray)),scanslidethread,SLOT(ScanSlideSerialSend(QByteArray)));
     connect(this,SIGNAL(sendScanTube(QByteArray)),scantubethread,SLOT(ScanTubeSerialSend(QByteArray)));
+
+
+    connect(serialport,SIGNAL(send()),serialthread,SLOT(SerialOpen()));
+    connect(serialport,SIGNAL(closed()),serialthread,SLOT(SerialClose()));
+
+    connect(scanslideport,SIGNAL(send()),scanslidethread,SLOT(ScanSlideOpen()));
+    connect(scanslideport,SIGNAL(closed()),scanslidethread,SLOT(ScanSlideClose()));
+
+    connect(scantubeport,SIGNAL(send()),scantubethread,SLOT(ScanTubeOpen()));
+    connect(scantubeport,SIGNAL(closed()),scantubethread,SLOT(ScanTubeClose()));
+
+
+    sub_slide->start(QThread::NormalPriority);
+    sub_tube->start(QThread::NormalPriority);
+    sub_serial->start(QThread::NormalPriority);
+
 }
 
 //数据库与csv文件转移线程
@@ -402,18 +415,24 @@ void MainWindow::on_reset_clicked()
 //串口配置窗口
 void MainWindow::on_fpga_triggered()
 {
-    serialport->show();//打开子界面，重新选择串口
-    connect(serialport,SIGNAL(send()),serialthread,SLOT(SerialOpen()));
+    serialport->open();
+//    serialport->show();//打开子界面，重新选择串口
+//    connect(serialport,SIGNAL(send()),serialthread,SLOT(SerialOpen()));
+//    connect(serialport,SIGNAL(closed()),serialthread,SLOT(SerialClose()));
 }
 void MainWindow::on_slide_triggered()
 {
+    scanslideport->setWindowTitle("slide");
     scanslideport->show();//打开子界面，重新选择串口
-    connect(scanslideport,SIGNAL(send()),scanslidethread,SLOT(ScanSlideOpen()));
+//    connect(scanslideport,SIGNAL(send()),scanslidethread,SLOT(ScanSlideOpen()));
+//    connect(scanslideport,SIGNAL(closed()),scanslidethread,SLOT(ScanSlideClose()));
 }
 void MainWindow::on_tube_triggered()
 {
+    scantubeport->setWindowTitle("tube");
     scantubeport->show();//打开子界面，重新选择串口
-    connect(scantubeport,SIGNAL(send()),scantubethread,SLOT(ScanTubeOpen()));
+//    connect(scantubeport,SIGNAL(send()),scantubethread,SLOT(ScanTubeOpen()));
+//    connect(scantubeport,SIGNAL(closed()),scantubethread,SLOT(ScanTubeClose()));
 }
 
 
@@ -526,8 +545,16 @@ void MainWindow::sendProtocoltoSerial(QByteArray data)
 {
     if(data.at(0) == 0x55)
         sendSerial(data);
-    else if(data.at(0) == 0x16)
+    else if(data.at(0) == 0x16 && flag_scan_slide_enable)
+    {
         sendScanSlide(data);
+        flag_scan_tube_enable = 0;
+    }
+    else if(data.at(0) == 0x16 && flag_scan_tube_enable)
+    {
+        flag_scan_tube_enable = 0;
+        sendScanTube(data);
+    }
 }
 
 

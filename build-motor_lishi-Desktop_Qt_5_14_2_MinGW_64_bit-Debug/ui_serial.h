@@ -13,11 +13,11 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QDialog>
-#include <QtWidgets/QDialogButtonBox>
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -41,7 +41,8 @@ public:
     QComboBox *Stop;
     QLabel *ParityLabel;
     QComboBox *Parity;
-    QDialogButtonBox *buttonBox;
+    QPushButton *ok;
+    QPushButton *cancel;
 
     void setupUi(QDialog *serial)
     {
@@ -140,13 +141,12 @@ public:
 
         formLayout->setWidget(4, QFormLayout::FieldRole, Parity);
 
-        buttonBox = new QDialogButtonBox(groupBox);
-        buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
-        buttonBox->setGeometry(QRect(0, 170, 192, 28));
-        sizePolicy.setHeightForWidth(buttonBox->sizePolicy().hasHeightForWidth());
-        buttonBox->setSizePolicy(sizePolicy);
-        buttonBox->setOrientation(Qt::Horizontal);
-        buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+        ok = new QPushButton(groupBox);
+        ok->setObjectName(QString::fromUtf8("ok"));
+        ok->setGeometry(QRect(20, 180, 61, 23));
+        cancel = new QPushButton(groupBox);
+        cancel->setObjectName(QString::fromUtf8("cancel"));
+        cancel->setGeometry(QRect(80, 180, 61, 23));
 
         verticalLayout->addWidget(groupBox);
 
@@ -155,8 +155,6 @@ public:
 
 
         retranslateUi(serial);
-        QObject::connect(buttonBox, SIGNAL(accepted()), serial, SLOT(accept()));
-        QObject::connect(buttonBox, SIGNAL(rejected()), serial, SLOT(reject()));
 
         QMetaObject::connectSlotsByName(serial);
     } // setupUi
@@ -186,6 +184,8 @@ public:
         Parity->setItemText(1, QCoreApplication::translate("serial", "\345\245\207", nullptr));
         Parity->setItemText(2, QCoreApplication::translate("serial", "\345\201\266", nullptr));
 
+        ok->setText(QCoreApplication::translate("serial", "\347\241\256\345\256\232", nullptr));
+        cancel->setText(QCoreApplication::translate("serial", "\345\217\226\346\266\210", nullptr));
     } // retranslateUi
 
 };

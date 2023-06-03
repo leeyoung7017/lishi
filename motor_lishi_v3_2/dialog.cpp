@@ -133,7 +133,7 @@ void Dialog::productProtocol()
             item = ui->tableWidget->item(tubescan_flag++,5); // 获取QTableWidgetItem对象
         QByteArray data = protocol->Protocol_Config(CMD_MOTORXZ,0x40,item->text().toUInt());
         sendProtocolToMainWindow(data);
-
+        flag_scan_tube_enable = 1;
 //        QMessageLogger().debug() << item->text().toUInt();
         return;
     }
@@ -182,6 +182,7 @@ void Dialog::productProtocol()
             break;
         case STATE_SCAN:
             data = scancodegun->Scan_Decode_Start();
+            flag_scan_slide_enable = 1;
             break;
         case STATE_IDLE:
 

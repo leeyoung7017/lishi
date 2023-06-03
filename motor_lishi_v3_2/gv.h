@@ -86,6 +86,8 @@ typedef struct{
 }SerialStruct;
 
 extern SerialStruct serialstruct;
+extern SerialStruct scanslidestruct;
+extern SerialStruct scantubestruct;
 
 //功能码cmd
 #define CMD_MOTORY      0x49
@@ -115,6 +117,8 @@ extern uint8_t flag_run;       //运动指令反馈标志位
 extern uint8_t flag_crc;       //crc指令错误标志位
 extern uint8_t flag_dialog;    //日志窗体开启标志位
 
+extern uint8_t flag_scan_tube_enable;
+extern uint8_t flag_scan_slide_enable;
 extern uint8_t flag_scan_tube;  //试管扫码枪扫描标志位
 extern uint8_t flag_scan_slide; //载波片扫码枪扫描标志位
 
@@ -133,6 +137,11 @@ extern ScanCodeGun *scan;
 extern QString loc_str;//发送的坐标所平行轴
 
 extern uint32_t step;//坐标
+
+
+extern QThread *sub_slide;
+extern QThread *sub_tube;
+extern QThread *sub_serial;
 
 #endif // GV_H
 //全局变量的设置

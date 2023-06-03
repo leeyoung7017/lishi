@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_SerialThread_t {
-    QByteArrayData data[9];
-    char stringdata0[73];
+    QByteArrayData data[10];
+    char stringdata0[85];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -38,13 +38,15 @@ QT_MOC_LITERAL(2, 18, 0), // ""
 QT_MOC_LITERAL(3, 19, 4), // "data"
 QT_MOC_LITERAL(4, 24, 8), // "location"
 QT_MOC_LITERAL(5, 33, 3), // "loc"
-QT_MOC_LITERAL(6, 37, 10), // "SerialOpen"
-QT_MOC_LITERAL(7, 48, 13), // "SerialReceive"
-QT_MOC_LITERAL(8, 62, 10) // "SerialSend"
+QT_MOC_LITERAL(6, 37, 11), // "SerialClose"
+QT_MOC_LITERAL(7, 49, 10), // "SerialOpen"
+QT_MOC_LITERAL(8, 60, 13), // "SerialReceive"
+QT_MOC_LITERAL(9, 74, 10) // "SerialSend"
 
     },
     "SerialThread\0send\0\0data\0location\0loc\0"
-    "SerialOpen\0SerialReceive\0SerialSend"
+    "SerialClose\0SerialOpen\0SerialReceive\0"
+    "SerialSend"
 };
 #undef QT_MOC_LITERAL
 
@@ -54,7 +56,7 @@ static const uint qt_meta_data_SerialThread[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -62,17 +64,19 @@ static const uint qt_meta_data_SerialThread[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,   34,    2, 0x06 /* Public */,
+       1,    2,   39,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       6,    0,   39,    2, 0x0a /* Public */,
-       7,    0,   40,    2, 0x0a /* Public */,
-       8,    1,   41,    2, 0x0a /* Public */,
+       6,    0,   44,    2, 0x0a /* Public */,
+       7,    0,   45,    2, 0x0a /* Public */,
+       8,    0,   46,    2, 0x0a /* Public */,
+       9,    1,   47,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QByteArray, 0x80000000 | 4,    3,    5,
 
  // slots: parameters
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QByteArray,    3,
@@ -87,9 +91,10 @@ void SerialThread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->send((*reinterpret_cast< QByteArray(*)>(_a[1])),(*reinterpret_cast< location(*)>(_a[2]))); break;
-        case 1: _t->SerialOpen(); break;
-        case 2: _t->SerialReceive(); break;
-        case 3: _t->SerialSend((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 1: _t->SerialClose(); break;
+        case 2: _t->SerialOpen(); break;
+        case 3: _t->SerialReceive(); break;
+        case 4: _t->SerialSend((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -133,13 +138,13 @@ int SerialThread::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 4;
+        _id -= 5;
     }
     return _id;
 }
@@ -151,8 +156,8 @@ void SerialThread::send(QByteArray _t1, location _t2)
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 struct qt_meta_stringdata_ScanTubeThread_t {
-    QByteArrayData data[9];
-    char stringdata0[95];
+    QByteArrayData data[10];
+    char stringdata0[109];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -166,15 +171,17 @@ QT_MOC_LITERAL(1, 15, 4), // "send"
 QT_MOC_LITERAL(2, 20, 0), // ""
 QT_MOC_LITERAL(3, 21, 11), // "tubexystore"
 QT_MOC_LITERAL(4, 33, 2), // "ID"
-QT_MOC_LITERAL(5, 36, 12), // "ScanTubeOpen"
-QT_MOC_LITERAL(6, 49, 21), // "ScanTubeSerialReceive"
-QT_MOC_LITERAL(7, 71, 18), // "ScanTubeSerialSend"
-QT_MOC_LITERAL(8, 90, 4) // "data"
+QT_MOC_LITERAL(5, 36, 13), // "ScanTubeClose"
+QT_MOC_LITERAL(6, 50, 12), // "ScanTubeOpen"
+QT_MOC_LITERAL(7, 63, 21), // "ScanTubeSerialReceive"
+QT_MOC_LITERAL(8, 85, 18), // "ScanTubeSerialSend"
+QT_MOC_LITERAL(9, 104, 4) // "data"
 
     },
     "ScanTubeThread\0send\0\0tubexystore\0ID\0"
-    "ScanTubeOpen\0ScanTubeSerialReceive\0"
-    "ScanTubeSerialSend\0data"
+    "ScanTubeClose\0ScanTubeOpen\0"
+    "ScanTubeSerialReceive\0ScanTubeSerialSend\0"
+    "data"
 };
 #undef QT_MOC_LITERAL
 
@@ -184,7 +191,7 @@ static const uint qt_meta_data_ScanTubeThread[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -192,13 +199,14 @@ static const uint qt_meta_data_ScanTubeThread[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   39,    2, 0x06 /* Public */,
-       3,    1,   40,    2, 0x06 /* Public */,
+       1,    0,   44,    2, 0x06 /* Public */,
+       3,    1,   45,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       5,    0,   43,    2, 0x0a /* Public */,
-       6,    0,   44,    2, 0x0a /* Public */,
-       7,    1,   45,    2, 0x0a /* Public */,
+       5,    0,   48,    2, 0x0a /* Public */,
+       6,    0,   49,    2, 0x0a /* Public */,
+       7,    0,   50,    2, 0x0a /* Public */,
+       8,    1,   51,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -207,7 +215,8 @@ static const uint qt_meta_data_ScanTubeThread[] = {
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QByteArray,    8,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QByteArray,    9,
 
        0        // eod
 };
@@ -220,9 +229,10 @@ void ScanTubeThread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         switch (_id) {
         case 0: _t->send(); break;
         case 1: _t->tubexystore((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 2: _t->ScanTubeOpen(); break;
-        case 3: _t->ScanTubeSerialReceive(); break;
-        case 4: _t->ScanTubeSerialSend((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 2: _t->ScanTubeClose(); break;
+        case 3: _t->ScanTubeOpen(); break;
+        case 4: _t->ScanTubeSerialReceive(); break;
+        case 5: _t->ScanTubeSerialSend((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -273,13 +283,13 @@ int ScanTubeThread::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 6)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 5;
+        _id -= 6;
     }
     return _id;
 }
@@ -297,8 +307,8 @@ void ScanTubeThread::tubexystore(int _t1)
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 struct qt_meta_stringdata_ScanSlideThread_t {
-    QByteArrayData data[8];
-    char stringdata0[88];
+    QByteArrayData data[9];
+    char stringdata0[103];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -311,15 +321,16 @@ QT_MOC_LITERAL(0, 0, 15), // "ScanSlideThread"
 QT_MOC_LITERAL(1, 16, 4), // "send"
 QT_MOC_LITERAL(2, 21, 0), // ""
 QT_MOC_LITERAL(3, 22, 3), // "str"
-QT_MOC_LITERAL(4, 26, 13), // "ScanSlideOpen"
-QT_MOC_LITERAL(5, 40, 22), // "ScanSlideSerialReceive"
-QT_MOC_LITERAL(6, 63, 19), // "ScanSlideSerialSend"
-QT_MOC_LITERAL(7, 83, 4) // "data"
+QT_MOC_LITERAL(4, 26, 14), // "ScanSlideClose"
+QT_MOC_LITERAL(5, 41, 13), // "ScanSlideOpen"
+QT_MOC_LITERAL(6, 55, 22), // "ScanSlideSerialReceive"
+QT_MOC_LITERAL(7, 78, 19), // "ScanSlideSerialSend"
+QT_MOC_LITERAL(8, 98, 4) // "data"
 
     },
-    "ScanSlideThread\0send\0\0str\0ScanSlideOpen\0"
-    "ScanSlideSerialReceive\0ScanSlideSerialSend\0"
-    "data"
+    "ScanSlideThread\0send\0\0str\0ScanSlideClose\0"
+    "ScanSlideOpen\0ScanSlideSerialReceive\0"
+    "ScanSlideSerialSend\0data"
 };
 #undef QT_MOC_LITERAL
 
@@ -329,7 +340,7 @@ static const uint qt_meta_data_ScanSlideThread[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       4,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -337,12 +348,13 @@ static const uint qt_meta_data_ScanSlideThread[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   34,    2, 0x06 /* Public */,
+       1,    1,   39,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       4,    0,   37,    2, 0x0a /* Public */,
-       5,    0,   38,    2, 0x0a /* Public */,
-       6,    1,   39,    2, 0x0a /* Public */,
+       4,    0,   42,    2, 0x0a /* Public */,
+       5,    0,   43,    2, 0x0a /* Public */,
+       6,    0,   44,    2, 0x0a /* Public */,
+       7,    1,   45,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -350,7 +362,8 @@ static const uint qt_meta_data_ScanSlideThread[] = {
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QByteArray,    7,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QByteArray,    8,
 
        0        // eod
 };
@@ -362,9 +375,10 @@ void ScanSlideThread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->send((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 1: _t->ScanSlideOpen(); break;
-        case 2: _t->ScanSlideSerialReceive(); break;
-        case 3: _t->ScanSlideSerialSend((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
+        case 1: _t->ScanSlideClose(); break;
+        case 2: _t->ScanSlideOpen(); break;
+        case 3: _t->ScanSlideSerialReceive(); break;
+        case 4: _t->ScanSlideSerialSend((*reinterpret_cast< QByteArray(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -408,13 +422,13 @@ int ScanSlideThread::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 5)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 4;
+        _id -= 5;
     }
     return _id;
 }

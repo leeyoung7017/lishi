@@ -12,6 +12,8 @@ uint8_t flag_dialog = 0;
 
 uint8_t flag_scan_slide = 0;
 uint8_t flag_scan_tube = 0;
+uint8_t flag_scan_tube_enable = 0;
+uint8_t flag_scan_slide_enable = 0;
 
 QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
@@ -27,6 +29,12 @@ QString loc_str;//发送的坐标所平行轴
 ScanCodeGun *scan = new ScanCodeGun();
 
 SerialStruct serialstruct;
+SerialStruct scanslidestruct;
+SerialStruct scantubestruct;
+
+QThread *sub_slide;
+QThread *sub_tube;
+QThread *sub_serial;
 
 
 tubes_location tube_loc[TESTNUM] =
